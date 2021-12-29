@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,vim
 
+### Specific to squirrel ###
+.squirrel/
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
