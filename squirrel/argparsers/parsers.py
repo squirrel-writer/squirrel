@@ -11,3 +11,9 @@ class InitParserData:
     name = 'init'
     desc = 'Inialiazation of new projects'
     help = f'Create a new {MainParserData.prog} project or reset the existing one'
+
+class WatchParserData:
+    name = 'watch'
+    desc = 'Monitoring and tracking writing'
+    help = 'Starts to monitor the current directory.' \
+        f' Note: a {MainParserData.prog} project must have already been created with `init`'
