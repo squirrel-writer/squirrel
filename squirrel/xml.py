@@ -41,7 +41,12 @@ def build_project_file(data: dict, file):
     tree.write(file)
 
 def build_watch_file(file):
-    pass
+    squirrel = ET.Element('squirrel')
+
+    tree = ET.ElementTree(squirrel)
+    ET.indent(tree)
+    tree.write(file)
+
 
 def update_project_file(data: dict):
     path = os.path.join(DIRECTORY_NAME, PROJECT_FILENAME)
@@ -88,5 +93,4 @@ def get_data_from_project_file():
         'project-type': squirrel.find('project-type').text
     }
     return data
-
 
