@@ -2,7 +2,7 @@ import argparse
 from datetime import datetime
 
 from .parsers import *
-from ..commands import init, watch
+from ..commands import init, watch, set_command, overview
 
 
 def setup_parsers():
@@ -11,9 +11,13 @@ def setup_parsers():
     subparsers = _setup_subparsers(main_parser)
     init_parser = _setup_init_parser(subparsers)
     watch_parser = _setup_watch_parser(subparsers)
+    set_parser = _setup_set_parser(subparsers)
+    overview_parser = _setup_overview_parser(subparsers)
 
     init_parser.set_defaults(func=init)
     watch_parser.set_defaults(func=watch)
+    set_parser.set_defaults(func=set_command)
+    overview_parser.set_defaults(func=overview)
     return main_parser
 
 
@@ -96,6 +100,61 @@ def _setup_watch_parser(subparsers):
         help='deamonizes the watcher to run in the background'
     )
     return watch_parser
+
+
+def _setup_set_parser(subparsers):
+    set_parser = subparsers.add_parser(
+        SetParserData.name,
+        description=SetParserData.desc,
+        help=SetParserData.help
+    )
+
+    set_parser.add_argument(
+        '-d',
+        '--description',
+        metavar='description',
+        action='store',
+        type=str,
+        help='set or change the description'
+    )
+
+    set_parser.add_argument(
+        '-n',
+        '--name',
+        metavar='name',
+        action='store',
+        type=str,
+        help='set a name for the project',
+    )
+
+    set_parser.add_argument(
+        '-g',
+        '--goal',
+        metavar='goal',
+        action='store',
+        type=int,
+        help='set or change your target number of words to reach'
+    )
+
+    set_parser.add_argument(
+        '--due',
+        metavar='due-date',
+        action='store',
+        type=_valid_date,
+        help='set or change the due date of the project a.k.a deadline'
+    )
+
+    return set_parser
+
+
+def _setup_overview_parser(subparsers):
+    overview_parser = subparsers.add_parser(
+        OverviewParserData.name,
+        description=OverviewParserData.desc,
+        help=OverviewParserData.help
+    )
+    return overview_parser
+
 
 def _valid_date(s):
     try:

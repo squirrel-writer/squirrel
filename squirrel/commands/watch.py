@@ -1,4 +1,6 @@
 import subprocess
 
+from ..vars import logger
+
 def watch(args):
-    print(args)
+    logger.debug(args)

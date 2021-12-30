@@ -17,3 +17,13 @@ class WatchParserData:
     desc = 'Monitoring and tracking writing'
     help = 'Starts to monitor the current directory.' \
         f' Note: a {MainParserData.prog} project must have already been created with `init`'
+
+class SetParserData:
+    name = 'set'
+    desc = 'set or change information about the project e.g description, name, goal'
+    help = 'set or change information about the project'
+
+class OverviewParserData:
+    name = 'overview'
+    desc = 'shows your writing progress'
+    help = 'shows an overview of your writing progress'

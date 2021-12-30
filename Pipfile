@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 inotify-simple = "*"
+rich = "*"
 
 [dev-packages]
 
