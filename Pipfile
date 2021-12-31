@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-inotify-simple = "*"
 rich = "*"
+inotifyrecursive = "*"
 
 [dev-packages]
 

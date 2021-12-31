@@ -12,7 +12,7 @@ def overview(args):
 
     texts = [
         f'[cyan bold underline]{data["name"]}[/]',
-        f'{data["description"]}',
+        f'[italic]{data["description"]}[/]',
         f'[hot_pink3]Goal:[/] 0/{data["goal"]}',
         f'[hot_pink3]Project Type:[/] {data["project-type"]}',
     ]
