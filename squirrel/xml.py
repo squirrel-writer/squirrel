@@ -34,7 +34,7 @@ def build_project_file(data: dict, file):
     goal.text = str(data.get('goal', 0))
 
     project_type = ET.SubElement(squirrel, 'project-type')
-    project_type.text = data.get('project-type', '')
+    project_type.text = data.get('project-type', 'text')
 
     tree = ET.ElementTree(squirrel)
     ET.indent(tree)

@@ -14,6 +14,7 @@ def overview(args):
         f'[cyan bold underline]{data["name"]}[/]',
         f'[italic]{data["description"]}[/]',
         f'[hot_pink3]Goal:[/] 0/{data["goal"]}',
+        f'[hot_pink3]Due Data:[/] {data["due-date"]}',
         f'[hot_pink3]Project Type:[/] {data["project-type"]}',
     ]
 
