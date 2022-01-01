@@ -5,6 +5,7 @@ from datetime import datetime
 
 from inotifyrecursive import INotify, flags
 
+from squirrel import plugin
 from ..vars import logger
 from ..xml import add_watch_entry
 
@@ -18,6 +19,8 @@ def watch(args):
     for watch in watches:
         i.add_watch_recursive(watch, watch_flags)
 
+    engine = plugin.load_module()
+
     try:
         while True:
             events = i.read()
@@ -26,7 +29,7 @@ def watch(args):
 
             # time get_count
             start = time.time()
-            total = get_count(files)
+            total = engine.get_count(files)
             end = time.time()
             logger.info(f'get_count({len(files)} files) -> {total} took {end - start}')
 
@@ -36,6 +39,7 @@ def watch(args):
     except KeyboardInterrupt:
         pass
 
+# TODO: we might benefit from this becoming a plugin
 def get_files(path):
     find_output = subprocess.run(
         f'find {path} -type f -not -path "*/[@.]*"',
@@ -44,15 +48,3 @@ def get_files(path):
         text=True
     )
     return find_output.stdout.strip().split('\n')
-
-# FIX: makes this function hotloadable as a plugin
-def get_count(files):
-    output = subprocess.run(
-        f'wc -w {" ".join(files)} | tail -n 1',
-        shell=True,
-        capture_output=True,
-        text=True,
-    )
-    return int(output.stdout.split(' ')[1])
-
-
