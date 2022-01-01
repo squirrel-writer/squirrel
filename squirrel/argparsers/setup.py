@@ -35,12 +35,14 @@ def _setup_main_parser():
     )
     return main_parser
 
+
 def _setup_subparsers(parent_parser):
     return parent_parser.add_subparsers(
         title=SubparsersData.title,
         help=SubparsersData.help,
         required=True,
     )
+
 
 def _setup_init_parser(subparsers):
     init_parser = subparsers.add_parser(
@@ -84,7 +86,17 @@ def _setup_init_parser(subparsers):
         help='specify the due date of the project a.k.a deadline'
     )
 
+    init_parser.add_argument(
+        '-p',
+        '--project-type',
+        metavar='project-type',
+        action='store',
+        type=str,
+        help='specify the project type'
+    )
+
     return init_parser
+
 
 def _setup_watch_parser(subparsers):
     watch_parser = subparsers.add_parser(
@@ -142,6 +154,15 @@ def _setup_set_parser(subparsers):
         action='store',
         type=_valid_date,
         help='set or change the due date of the project a.k.a deadline'
+    )
+
+    set_parser.add_argument(
+        '-p',
+        '--project-type',
+        metavar='project-type',
+        action='store',
+        type=str,
+        help='set or change the project type'
     )
 
     return set_parser

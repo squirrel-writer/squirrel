@@ -37,15 +37,18 @@ def build_project_file(data: dict, file):
     goal.text = str(data.get('goal', 0))
 
     project_type = ET.SubElement(squirrel, 'project-type')
-    project_type.text = data.get('project-type', 'text')
+    p_type = data.get('project_type', 'text')
+    project_type.text = p_type if p_type is not None else 'text'
 
     tree = ET.ElementTree(squirrel)
     ET.indent(tree)
     tree.write(file, encoding='utf-8', xml_declaration=True)
 
+
 def build_watch_file(file):
     squirrel = ET.Element('squirrel')
-    comment = ET.Comment('This is file generation by squirrel. Modify it at your own risk.')
+    comment = ET.Comment(
+        'This is file generation by squirrel. Modify it at your own risk.')
     squirrel.insert(1, comment)
     tree = ET.ElementTree(squirrel)
     ET.indent(tree)
@@ -64,24 +67,32 @@ def update_project_file(data: dict):
         try:
             squirrel.find('description').text = desc
         except AttributeError as e:
-            logger.error('[bold red blink]description[/] element was not found in the xml file'\
+            logger.error('[bold red blink]description[/] element was not found in the xml file'
                          ' try initializing the project again', extra={'markup': True})
 
     if (goal := data.get('goal')) is not None:
         try:
             squirrel.find('goal').text = str(goal)
         except AttributeError as e:
-            logger.error('goal element was not found in the xml file'\
-                          ' try initializing the project again')
+            logger.error('goal element was not found in the xml file'
+                         ' try initializing the project again')
 
     if (due := data.get('due')) is not None:
         try:
             squirrel.find('due-date').text = due
         except AttributeError as e:
-            logger.error('due-date element was not found in the xml file'\
-                          'try init project again')
+            logger.error('due-date element was not found in the xml file'
+                         'try init project again')
+
+    if (project_type := data.get('project_type')) is not None:
+        try:
+            squirrel.find('project-type').text = project_type
+        except AttributeError as e:
+            logger.error('[bold red blink]project-type[/] element was not found in the xml file'
+                         ' try initializing the project again', extra={'markup': True})
 
     tree.write(path, encoding='utf-8', xml_declaration=True)
+
 
 def get_data_from_project_file():
     path = project_file_path
@@ -98,6 +109,7 @@ def get_data_from_project_file():
     }
     return data
 
+
 def get_watches_data():
     """returns all watches tag data with -1 being the key of the last watches"""
     path = watch_file_path
@@ -109,7 +121,8 @@ def get_watches_data():
     if len(squirrel) > 1:
         for watches in squirrel.findall('watches'):
             date = watches.attrib['date']
-            data[date] = (watches.attrib['prev_count'], get_watches_last_count(watches))
+            data[date] = (watches.attrib['prev_count'],
+                          get_watches_last_count(watches))
         data['-1'] = data[date]
     return data
 
@@ -139,6 +152,7 @@ def get_watches_entry(date):
         except KeyError:
             pass
     return None, squirrel
+
 
 def add_watch_entry(total, dt: datetime):
     """Add a watch tag to the watches tag of that date"""
@@ -176,6 +190,6 @@ def add_watch_entry(total, dt: datetime):
 
 
 def parse(path):
-    parser_save_comments = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+    parser_save_comments = ET.XMLParser(
+        target=ET.TreeBuilder(insert_comments=True))
     return ET.parse(path, parser_save_comments)
-
