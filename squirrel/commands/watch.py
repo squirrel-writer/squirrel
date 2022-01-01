@@ -1,10 +1,12 @@
 import os
 import subprocess
 import time
+from datetime import datetime
 
 from inotifyrecursive import INotify, flags
 
 from ..vars import logger
+from ..xml import add_watch_entry
 
 def watch(args):
     logger.debug(args)
@@ -18,7 +20,7 @@ def watch(args):
 
     try:
         while True:
-            events = i.read(read_delay=10000)
+            events = i.read()
             logger.debug(events)
             files = get_files(wd)
 
@@ -28,6 +30,9 @@ def watch(args):
             end = time.time()
             logger.info(f'get_count({len(files)} files) -> {total} took {end - start}')
 
+            added = add_watch_entry(total, datetime.now())
+            if added:
+                logger.debug('A new watch entry was added')
     except KeyboardInterrupt:
         pass
 

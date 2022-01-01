@@ -1,8 +1,11 @@
 import os
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 from .vars import logger
 from .vars import DIRECTORY_NAME, PROJECT_FILENAME, WATCH_FILENAME
+from .vars import project_file_path, watch_file_path
+
 
 def build_project(data: dict, path):
     files = [
@@ -38,50 +41,51 @@ def build_project_file(data: dict, file):
 
     tree = ET.ElementTree(squirrel)
     ET.indent(tree)
-    tree.write(file)
+    tree.write(file, encoding='utf-8', xml_declaration=True)
 
 def build_watch_file(file):
     squirrel = ET.Element('squirrel')
-
+    comment = ET.Comment('This is file generation by squirrel. Modify it at your own risk.')
+    squirrel.insert(1, comment)
     tree = ET.ElementTree(squirrel)
     ET.indent(tree)
-    tree.write(file)
+    tree.write(file, encoding='utf-8', xml_declaration=True)
 
 
 def update_project_file(data: dict):
-    path = os.path.join(DIRECTORY_NAME, PROJECT_FILENAME)
-    tree = ET.parse(path)
+    path = project_file_path
+    tree = parse(path)
     squirrel = tree.getroot()
 
-    if (name := dir_args.get('name')) is not None:
+    if (name := data.get('name')) is not None:
         squirrel.set('name', name)
 
-    if (desc := dir_args.get('description')) is not None:
+    if (desc := data.get('description')) is not None:
         try:
             squirrel.find('description').text = desc
         except AttributeError as e:
             logger.error('[bold red blink]description[/] element was not found in the xml file'\
                          ' try initializing the project again', extra={'markup': True})
 
-    if (goal := dir_args.get('goal')) is not None:
+    if (goal := data.get('goal')) is not None:
         try:
-            squirrel.find('goal').text = goal
+            squirrel.find('goal').text = str(goal)
         except AttributeError as e:
             logger.error('goal element was not found in the xml file'\
                           ' try initializing the project again')
 
-    if (due := dir_args.get('due')) is not None:
+    if (due := data.get('due')) is not None:
         try:
             squirrel.find('due-date').text = due
         except AttributeError as e:
             logger.error('due-date element was not found in the xml file'\
                           'try init project again')
 
-    tree.write(path)
+    tree.write(path, encoding='utf-8', xml_declaration=True)
 
 def get_data_from_project_file():
-    path = os.path.join(DIRECTORY_NAME, PROJECT_FILENAME)
-    tree = ET.parse(path)
+    path = project_file_path
+    tree = parse(path)
     squirrel = tree.getroot()
 
     data = {
@@ -93,4 +97,85 @@ def get_data_from_project_file():
         'project-type': squirrel.find('project-type').text
     }
     return data
+
+def get_watches_data():
+    """returns all watches tag data with -1 being the key of the last watches"""
+    path = watch_file_path
+    tree = parse(path)
+    squirrel = tree.getroot()
+
+    data = {}
+    data['-1'] = (str(0), str(0))
+    if len(squirrel) > 1:
+        for watches in squirrel.findall('watches'):
+            date = watches.attrib['date']
+            data[date] = (watches.attrib['prev_count'], get_watches_last_count(watches))
+        data['-1'] = data[date]
+    return data
+
+
+def get_watches_last_count(watches):
+    if len(watches) == 0:
+        return 0
+    else:
+        try:
+            return watches[-1].text
+        except AttributeError:
+            return 0
+
+
+def get_watches_entry(date):
+    """retuns the watches tag of the passed date and root element; defaults to (None, root)"""
+    path = watch_file_path
+    tree = parse(path)
+    squirrel = tree.getroot()
+
+    for watches in squirrel.findall('watches'):
+        try:
+            if watches.attrib['date'] == date.strftime('%d/%m/%Y'):
+                return watches, squirrel
+        except AttributeError:
+            pass
+        except KeyError:
+            pass
+    return None, squirrel
+
+def add_watch_entry(total, dt: datetime):
+    """Add a watch tag to the watches tag of that date"""
+    path = watch_file_path
+
+    watches_date, root = get_watches_entry(dt.date())
+    if watches_date is not None:
+        try:
+            if watches_date[-1].text != str(total):
+                watch = ET.SubElement(watches_date, 'watch', datetime=str(dt))
+                watch.text = str(total)
+            else:
+                return False
+        except KeyError:
+            pass
+    elif root is not None:
+        try:
+            prev_count = root[-1][-1].text
+        except (IndexError, AttributeError):
+            prev_count = str(0)
+
+        watches = ET.SubElement(root,
+                                'watches',
+                                prev_count=prev_count,
+                                date=dt.date().strftime('%d/%m/%Y'))
+        watch = ET.SubElement(watches, 'watch', datetime=str(dt))
+        watch.text = str(total)
+    else:
+        return False
+
+    tree = ET.ElementTree(root)
+    ET.indent(tree)
+    tree.write(path, encoding='utf-8', xml_declaration=True)
+    return True
+
+
+def parse(path):
+    parser_save_comments = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+    return ET.parse(path, parser_save_comments)
 
