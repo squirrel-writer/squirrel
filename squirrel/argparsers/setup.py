@@ -10,9 +10,9 @@ def setup_parsers():
     main_parser = _setup_main_parser()
     subparsers = _setup_subparsers(main_parser)
     init_parser = _setup_init_parser(subparsers)
-    watch_parser = _setup_watch_parser(subparsers)
     set_parser = _setup_set_parser(subparsers)
     overview_parser = _setup_overview_parser(subparsers)
+    watch_parser = _setup_watch_parser(subparsers)
 
     init_parser.set_defaults(func=init)
     watch_parser.set_defaults(func=watch)
@@ -26,6 +26,7 @@ def _setup_main_parser():
         prog=MainParserData.prog,
         description=MainParserData.desc,
     )
+
     main_parser.add_argument(
         '-v',
         '--version',
@@ -33,6 +34,13 @@ def _setup_main_parser():
         version='%(prog)s 0.1',
         help='Show the version of the program',
     )
+
+    main_parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Activate debug mode'
+    )
+
     return main_parser
 
 

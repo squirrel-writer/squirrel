@@ -6,10 +6,12 @@ from .argparsers import setup_parsers
 
 
 def _main():
-    logging.basicConfig(level=logging.DEBUG,
+    parser = setup_parsers()
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
                         format="%(message)s",
                         datefmt="[%X]",
                         handlers=[RichHandler()])
-    parser = setup_parsers()
-    args = parser.parse_args()
+
     args.func(args)
