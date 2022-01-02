@@ -18,6 +18,27 @@ class WatchParserData:
     help = 'Starts to monitor the current directory.' \
         f' Note: a {MainParserData.prog} project must have already been created with `init`'
 
+class WatchSubparsersData:
+    title = 'Action'
+    help = f'Start/Stop/Status watchers'
+
+class StartWatchParserData:
+    name = 'start'
+    desc = 'Monitoring and tracking writing'
+    help = 'Start to monitor the current directory.\n' \
+        f' Note: a {MainParserData.prog} project must have already been created with `init`'
+
+class StatusWatchParserData:
+    name = 'status'
+    desc = 'Monitoring and tracking writing'
+    help = 'Status of the daemonized watcher'
+
+class StopWatchParserData:
+    name = 'stop'
+    desc = 'Stop monitoring and tracking writing'
+    help = 'stop monitoring the current directory.\n'\
+        'Note: This only works with the daemonized version'
+
 class SetParserData:
     name = 'set'
     desc = 'set or change information about the project e.g description, name, goal'

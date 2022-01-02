@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 rich = "*"
 inotifyrecursive = "*"
+daemonize = "*"
 
 [dev-packages]
 

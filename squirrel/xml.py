@@ -94,8 +94,8 @@ def update_project_file(data: dict):
     tree.write(path, encoding='utf-8', xml_declaration=True)
 
 
-def get_data_from_project_file():
-    path = project_file_path
+def get_data_from_project_file(basedir=''):
+    path = os.path.join(basedir, project_file_path)
     tree = parse(path)
     squirrel = tree.getroot()
 

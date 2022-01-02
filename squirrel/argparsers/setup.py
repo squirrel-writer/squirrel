@@ -2,7 +2,8 @@ import argparse
 from datetime import datetime
 
 from .parsers import *
-from ..commands import init, watch, set_command, overview
+from ..commands import init, set_command, overview, watch
+from ..commands.watch import status, stop
 
 
 def setup_parsers():
@@ -14,10 +15,6 @@ def setup_parsers():
     overview_parser = _setup_overview_parser(subparsers)
     watch_parser = _setup_watch_parser(subparsers)
 
-    init_parser.set_defaults(func=init)
-    watch_parser.set_defaults(func=watch)
-    set_parser.set_defaults(func=set_command)
-    overview_parser.set_defaults(func=overview)
     return main_parser
 
 
@@ -103,6 +100,8 @@ def _setup_init_parser(subparsers):
         help='specify the project type'
     )
 
+    init_parser.set_defaults(func=init)
+
     return init_parser
 
 
@@ -113,12 +112,39 @@ def _setup_watch_parser(subparsers):
         help=WatchParserData.help,
     )
 
-    watch_parser.add_argument(
-        '-d',
-        '--deamon',
-        action='store_true',
-        help='deamonizes the watcher to run in the background'
+    subparsers = watch_parser.add_subparsers(
+        title=WatchSubparsersData.title,
+        help=WatchSubparsersData.help,
+        required=True,
     )
+
+    start_parser = subparsers.add_parser(
+        StartWatchParserData.name,
+        description=StartWatchParserData.desc,
+        help=StartWatchParserData.help
+    )
+    start_parser.add_argument(
+        '-d',
+        '--daemon',
+        action='store_true',
+        help='daemonizes the watcher to run in the background'
+    )
+    start_parser.set_defaults(func=watch)
+
+    status_parser = subparsers.add_parser(
+        StatusWatchParserData.name,
+        description=StatusWatchParserData.desc,
+        help=StatusWatchParserData.help
+    )
+    status_parser.set_defaults(func=status)
+
+    stop_parser = subparsers.add_parser(
+        StopWatchParserData.name,
+        description=StopWatchParserData.desc,
+        help=StopWatchParserData.help
+    )
+    stop_parser.set_defaults(func=stop)
+
     return watch_parser
 
 
@@ -173,6 +199,7 @@ def _setup_set_parser(subparsers):
         help='set or change the project type'
     )
 
+    set_parser.set_defaults(func=set_command)
     return set_parser
 
 
@@ -182,6 +209,8 @@ def _setup_overview_parser(subparsers):
         description=OverviewParserData.desc,
         help=OverviewParserData.help
     )
+
+    overview_parser.set_defaults(func=overview)
     return overview_parser
 
 
