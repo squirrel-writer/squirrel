@@ -9,6 +9,7 @@ inotifyrecursive = "*"
 daemonize = "*"
 
 [dev-packages]
+codespell = "*"
 
 [requires]
 python_version = "3.9"

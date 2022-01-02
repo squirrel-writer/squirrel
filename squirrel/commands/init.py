@@ -26,7 +26,7 @@ def init(args):
 
 def _delete_project_folder(path, warning_msg=None):
         if warning_msg is None:
-            warning_msg = 'This command will delete your 🐿️  project folde\n'\
+            warning_msg = 'This command will delete your 🐿️  project foldre\n'\
                 'proceed? (y/n)'
 
         try:
