@@ -2,6 +2,7 @@ import os
 import subprocess
 import time
 import functools
+import signal
 from datetime import datetime
 import logging
 
@@ -9,8 +10,9 @@ from inotifyrecursive import INotify, flags
 from daemonize import Daemonize
 
 from squirrel import plugin
-from ..vars import logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, DAEMON_NAME
+from ..vars import logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, DAEMON_NAME, console
 from ..xml import add_watch_entry
+
 
 def watch(args):
     logger.debug(args)
@@ -19,10 +21,10 @@ def watch(args):
     if args.daemon:
         daemon_logger, keep_fds = setup_daemon_logger()
         d = Daemonize(app=DAEMON_NAME,
-                pid=watch_daemon_pidfile_path,
-                action=functools.partial(daemon, wd, daemon_logger),
-                logger=daemon_logger,
-                keep_fds=keep_fds)
+                      pid=watch_daemon_pidfile_path,
+                      action=functools.partial(daemon, wd, daemon_logger),
+                      logger=daemon_logger,
+                      keep_fds=keep_fds)
         d.start()
     else:
         try:
@@ -30,13 +32,45 @@ def watch(args):
         except KeyboardInterrupt:
             pass
 
+
 def status(args):
-    logger.debug('status')
     logger.debug(args)
+    path = watch_daemon_pidfile_path
+    pid = get_daemon_pid()
+    if pid != 0:
+        if pid_exists(pid):
+            console.print('🟢 squirreld watcher is running')
+        else:
+            console.print('🔴 squirreld watcher is not running')
+    else:
+        console.print('🔴 squirreld watcher is not running')
+
 
 def stop(args):
-    logger.debug('stop')
     logger.debug(args)
+    pid = get_daemon_pid()
+    os.kill(pid, signal.SIGTERM)
+    console.print('Stopping squirreld watcher')
+
+
+def pid_exists(pid):
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
+
+
+def get_daemon_pid() -> int:
+    path = watch_daemon_pidfile_path
+    try:
+        with open(path, 'r') as f:
+            pid = f.readline()
+            return int(pid)
+    except FileNotFoundError:
+        return 0
+
 
 def daemon(wd, logger):
     watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE
@@ -54,7 +88,8 @@ def daemon(wd, logger):
         events = i.read()
 
         files = get_files(wd)
-        # lazzy fix for when we get event from log file
+
+        # lazzy fix for when we get event from hidden files or files from hidden directories
         count = False
         for event in events:
             fullpath = os.path.join(i.get_path(event.wd), event.name)
@@ -67,7 +102,8 @@ def daemon(wd, logger):
             start = time.time()
             total = engine.get_count(files)
             end = time.time()
-            logger.info(f'get_count({len(files)} files) -> {total} took {end - start}')
+            logger.info(
+                f'get_count({len(files)} files) -> {total} took {end - start}')
 
             added = add_watch_entry(total, datetime.now())
             if added:
@@ -79,7 +115,7 @@ def setup_daemon_logger():
     daemon_logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(watch_daemon_logfile_path)
     formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
-                              datefmt='%Y-%m-%d %H:%M:%S')
+                                  datefmt='%Y-%m-%d %H:%M:%S')
     fh.setFormatter(formatter)
     fh.setLevel(logging.DEBUG)
     daemon_logger.addHandler(fh)

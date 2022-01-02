@@ -27,6 +27,7 @@ Grab the repo, install dependencies, and voila.
 git clone https://github.com/squirrel-writer/squirrel
 cd squirrel
 pipenv install && pipenv shell
+python -m squirrel init
 ```
 ## Usage
 There 4 main verbs to interact with squirrel:
@@ -48,5 +49,7 @@ squirrel set --name "English Assay" --goal 10000 -due 05/01/2022
 ### Watch
 Run this command to tell squirrel to watch your writing.
 ```sh
-squirrel watch
+squirrel watch start --daemon
+squirrel watch status
+squirrel watch stop
 ```
