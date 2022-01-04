@@ -1,8 +1,9 @@
 import os
+import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-from .vars import logger
+from .vars import logger, console
 from .vars import PROJECT_FILENAME, WATCH_FILENAME
 from .vars import project_file_path, watch_file_path
 
@@ -99,13 +100,49 @@ def get_data_from_project_file(basedir=''):
     tree = parse(path)
     squirrel = tree.getroot()
 
+    try:
+        name = squirrel.attrib['name']
+    except (AttributeError, KeyError):
+        logger.error('Could not find name attribute')
+        name = None
+
+    try:
+        path = squirrel.find('path').attrib['src']
+    except (AttributeError, KeyError):
+        logger.error('Could not find path field')
+        path = None
+
+    try:
+        description = squirrel.find('description').text
+    except (AttributeError, KeyError):
+        logger.error('Could not find description field')
+        description = None
+
+    try:
+        goal = squirrel.find('goal').text
+    except (AttributeError, KeyError):
+        logger.error('Could not find goal field')
+        goal = None
+
+    try:
+        due_date = squirrel.find('due-date').text
+    except (AttributeError, KeyError):
+        logger.error('Could not find due_date field')
+        due_date = None
+
+    try:
+        project_type = squirrel.find('project-type').text
+    except (AttributeError, KeyError):
+        logger.error('Could not find project-type field')
+        project_type = None
+
     data = {
-        'name': squirrel.attrib['name'],
-        'path': squirrel.find('path').attrib['src'],
-        'description': squirrel.find('description').text,
-        'goal': squirrel.find('goal').text,
-        'due-date': squirrel.find('due-date').text,
-        'project-type': squirrel.find('project-type').text
+        'name': name,
+        'path': path,
+        'description': description,
+        'goal': goal,
+        'due-date': due_date,
+        'project-type': project_type
     }
     return data
 
@@ -120,11 +157,14 @@ def get_watches_data():
     data = {}
     data['-1'] = (str(0), str(0))
     if len(squirrel) > 1:
-        for watches in squirrel.findall('watches'):
-            date = watches.attrib['date']
-            data[date] = (watches.attrib['prev_count'],
-                          get_watches_last_count(watches))
-        data['-1'] = data[date]
+        try:
+            for watches in squirrel.findall('watches'):
+                date = watches.attrib['date']
+                data[date] = (watches.attrib['prev_count'],
+                              get_watches_last_count(watches))
+            data['-1'] = data[date]
+        except (AttributeError, KeyError):
+            sys.exit(1)
     return data
 
 
@@ -192,6 +232,12 @@ def add_watch_entry(total, dt: datetime):
 
 
 def parse(path):
-    parser_save_comments = ET.XMLParser(
-        target=ET.TreeBuilder(insert_comments=True))
-    return ET.parse(path, parser_save_comments)
+    try:
+        parser_save_comments = ET.XMLParser(
+            target=ET.TreeBuilder(insert_comments=True))
+        tree = ET.parse(path, parser_save_comments)
+        return tree
+    except FileNotFoundError:
+        console.print(f'Could not find {path!r};'\
+                      ' Verify that project that initialized correctly.')
+        sys.exit(1)
