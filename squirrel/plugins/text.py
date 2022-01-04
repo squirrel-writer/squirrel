@@ -1,4 +1,8 @@
 import subprocess
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_count(files) -> int:
@@ -8,4 +12,7 @@ def get_count(files) -> int:
         capture_output=True,
         text=True,
     )
-    return int(output.stdout.split(' ')[1])
+
+    count = output.stdout.strip().split(' ')[0]
+
+    return int(count)
