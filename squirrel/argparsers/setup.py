@@ -210,6 +210,12 @@ def _setup_overview_parser(subparsers):
         help=OverviewParserData.help
     )
 
+    overview_parser.add_argument(
+        '--graph',
+        action='store_true',
+        help='Display a bar chart for the last 5 days of writing'
+    )
+
     overview_parser.set_defaults(func=overview)
     return overview_parser
 

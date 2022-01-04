@@ -3,7 +3,7 @@
 # Squirrel
 **Very much a WIP project**
 
-squirrel is a command line program that tracks you writing progress and gives you useful information and cute and pictures of squirrels.
+squirrel is a command line program that tracks you writing progress and gives you useful information and cute pictures of squirrels.
 
 ## How it works
 Squirrel's design was inspired by `git`'s design (from a user perspective at least). To start a project, you have to initialize a new project in your directory of choice which will create a `.squirrel` folder structure in your directory similar to `.git` directories.

@@ -154,17 +154,16 @@ def get_watches_data():
     tree = parse(path)
     squirrel = tree.getroot()
 
-    data = {}
-    data['-1'] = (str(0), str(0))
-    if len(squirrel) > 1:
-        try:
-            for watches in squirrel.findall('watches'):
-                date = watches.attrib['date']
-                data[date] = (watches.attrib['prev_count'],
-                              get_watches_last_count(watches))
-            data['-1'] = data[date]
-        except (AttributeError, KeyError):
-            sys.exit(1)
+    data = []
+    try:
+        for watches in squirrel.findall('watches'):
+            date = watches.attrib['date']
+            data.append((date,
+                         watches.attrib['prev_count'],
+                         get_watches_last_count(watches)))
+    except (AttributeError, KeyError):
+        sys.exit(1)
+
     return data
 
 
