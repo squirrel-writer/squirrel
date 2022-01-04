@@ -74,18 +74,25 @@ def get_daemon_pid() -> int:
 def daemon(wd, logger):
     watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE
 
+#set working dir
     os.chdir(wd)
     logger.debug('Adding inotify watches')
+#tuple with working dir
     watches = (wd, )
+#start Inotify (Watchdog)
     i = INotify()
+#legger til alle watchdir til Inotify
     for watch in watches:
         i.add_watch_recursive(watch, watch_flags)
 
+# laster riktig type plugin etter hva som er definert i squirrel.xml
     engine = plugin.load_module()
 
     while True:
+# Laster alle endrede filer til en List
         events = i.read()
 
+# --> Endre 'count' til True hvis filen ikke er skjulet (.*)
         files = get_files(wd)
 
         # lazzy fix for when we get event from hidden files
@@ -96,10 +103,12 @@ def daemon(wd, logger):
             if fullpath in files:
                 count = True
                 break
+# <---
 
         if count:
             # time get_count
             start = time.time()
+# teller ord i alle filer som finnes i 'files'
             total = engine.get_count(files)
             end = time.time()
             logger.info(
