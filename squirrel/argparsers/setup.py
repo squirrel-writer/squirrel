@@ -10,10 +10,10 @@ def setup_parsers():
     """Sets up all of the argparsers"""
     main_parser = _setup_main_parser()
     subparsers = _setup_subparsers(main_parser)
-    init_parser = _setup_init_parser(subparsers)
-    set_parser = _setup_set_parser(subparsers)
-    overview_parser = _setup_overview_parser(subparsers)
-    watch_parser = _setup_watch_parser(subparsers)
+    _setup_init_parser(subparsers)
+    _setup_set_parser(subparsers)
+    _setup_overview_parser(subparsers)
+    _setup_watch_parser(subparsers)
 
     return main_parser
 

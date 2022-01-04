@@ -5,6 +5,7 @@ from ..vars import console, logger
 from ..vars import squirrel_art
 from ..xml import get_data_from_project_file, get_watches_data
 
+
 def overview(args):
 
     data = get_data_from_project_file()

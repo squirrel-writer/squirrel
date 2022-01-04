@@ -35,7 +35,6 @@ def watch(args):
 
 def status(args):
     logger.debug(args)
-    path = watch_daemon_pidfile_path
     pid = get_daemon_pid()
     if pid != 0:
         if pid_exists(pid):
@@ -89,7 +88,8 @@ def daemon(wd, logger):
 
         files = get_files(wd)
 
-        # lazzy fix for when we get event from hidden files or files from hidden directories
+        # lazzy fix for when we get event from hidden files
+        # or files from hidden directories
         count = False
         for event in events:
             fullpath = os.path.join(i.get_path(event.wd), event.name)

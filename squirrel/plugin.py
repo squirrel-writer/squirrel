@@ -2,6 +2,7 @@ import importlib
 
 from .xml import get_data_from_project_file
 
+
 def load_module():
     """Loads the module declared in the xml project file.
     The module must have a get_count(files: list) -> int function"""

@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 
 from .vars import logger
-from .vars import DIRECTORY_NAME, PROJECT_FILENAME, WATCH_FILENAME
+from .vars import PROJECT_FILENAME, WATCH_FILENAME
 from .vars import project_file_path, watch_file_path
 
 
@@ -15,7 +15,7 @@ def build_project(data: dict, path):
     os.mkdir(path)
 
     for file in files:
-        with open(file, 'w') as f:
+        with open(file, 'w') as _:
             pass
 
     build_project_file(data, files[0])
@@ -25,7 +25,7 @@ def build_project(data: dict, path):
 def build_project_file(data: dict, file):
     squirrel = ET.Element('squirrel', name=f"{data.get('name', '')}")
 
-    path = ET.SubElement(squirrel, 'path', src=f'{os.path.dirname(file)}')
+    _ = ET.SubElement(squirrel, 'path', src=f'{os.path.dirname(file)}')
 
     description = ET.SubElement(squirrel, 'description')
     description.text = data.get('description', '')
@@ -66,28 +66,28 @@ def update_project_file(data: dict):
     if (desc := data.get('description')) is not None:
         try:
             squirrel.find('description').text = desc
-        except AttributeError as e:
+        except AttributeError:
             logger.error('[bold red blink]description[/] element was not found in the xml file'
                          ' try initializing the project again', extra={'markup': True})
 
     if (goal := data.get('goal')) is not None:
         try:
             squirrel.find('goal').text = str(goal)
-        except AttributeError as e:
+        except AttributeError:
             logger.error('goal element was not found in the xml file'
                          ' try initializing the project again')
 
     if (due := data.get('due')) is not None:
         try:
             squirrel.find('due-date').text = due
-        except AttributeError as e:
+        except AttributeError:
             logger.error('due-date element was not found in the xml file'
                          'try init project again')
 
     if (project_type := data.get('project_type')) is not None:
         try:
             squirrel.find('project-type').text = project_type
-        except AttributeError as e:
+        except AttributeError:
             logger.error('[bold red blink]project-type[/] element was not found in the xml file'
                          ' try initializing the project again', extra={'markup': True})
 
@@ -111,7 +111,8 @@ def get_data_from_project_file(basedir=''):
 
 
 def get_watches_data():
-    """returns all watches tag data with -1 being the key of the last watches"""
+    """returns all watches tag data with -1
+    being the key of the last watches"""
     path = watch_file_path
     tree = parse(path)
     squirrel = tree.getroot()
@@ -138,7 +139,8 @@ def get_watches_last_count(watches):
 
 
 def get_watches_entry(date):
-    """returns the watches tag of the passed date and root element; defaults to (None, root)"""
+    """returns the watches tag of the passed date and root element;
+    defaults to (None, root)"""
     path = watch_file_path
     tree = parse(path)
     squirrel = tree.getroot()

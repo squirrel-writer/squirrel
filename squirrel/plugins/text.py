@@ -1,5 +1,6 @@
 import subprocess
 
+
 def get_count(files) -> int:
     output = subprocess.run(
         f'wc -w {" ".join(files)} | tail -n 1',
