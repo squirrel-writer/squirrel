@@ -27,7 +27,8 @@ Grab the repo, install dependencies, and voila.
 git clone https://github.com/squirrel-writer/squirrel
 cd squirrel
 pipenv install && pipenv shell
-python -m squirrel init
+# Install the package in editable mode
+pipenv install -e .
 ```
 ## Usage
 There 4 main verbs to interact with squirrel:
