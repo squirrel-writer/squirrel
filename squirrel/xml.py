@@ -195,21 +195,35 @@ def get_watches_entry(date):
     return None, squirrel
 
 
+def make_watch_entry(parent, dt: datetime, value: int):
+    watch = ET.SubElement(parent, 'watch', datetime=str(dt))
+    watch.text = value
+    return watch
+
+
 def add_watch_entry(total, dt: datetime):
     """Add a watch tag to the watches tag of that date"""
     path = watch_file_path
 
+    # We try to get the watch of the datetime passed
     watches_date, root = get_watches_entry(dt.date())
+
     if watches_date is not None:
-        try:
+        # If there are already <watch> inside <watches>, we have to verify that
+        # they are different counts otherwise it's useless to record it
+        # if in the other hand, we don't find any <watch> in <watches>
+        # we should simply add a new <watch> tag
+        if len(watches_date) > 0:
             if watches_date[-1].text != str(total):
-                watch = ET.SubElement(watches_date, 'watch', datetime=str(dt))
-                watch.text = str(total)
+                make_watch_entry(watches_date, str(dt), str(total))
             else:
                 return False
-        except KeyError:
-            pass
+        else:
+            make_watch_entry(watches_date, str(dt), str(total))
+
     elif root is not None:
+        # If haven't found <watches> tag, we need to create
+        # a new one with a <watch> tag inside of it.
         try:
             prev_count = root[-1][-1].text
         except (IndexError, AttributeError):
@@ -219,8 +233,7 @@ def add_watch_entry(total, dt: datetime):
                                 'watches',
                                 prev_count=prev_count,
                                 date=dt.date().strftime('%d/%m/%Y'))
-        watch = ET.SubElement(watches, 'watch', datetime=str(dt))
-        watch.text = str(total)
+        make_watch_entry(watches_date, str(dt), str(total))
     else:
         return False
 
