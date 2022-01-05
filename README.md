@@ -15,6 +15,7 @@ As many writing project use many file formats and programs, squirrel has a plugi
 Which plugin will used depends on the `project-type` field.
 Here are the plugins available now:
 * text
+* texcount
 
 *hmm, haven't found your project type? you can write Python code? Please make a pull request :)*
 
