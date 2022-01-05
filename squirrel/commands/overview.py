@@ -1,5 +1,6 @@
 from rich.panel import Panel
 from rich.columns import Columns
+from datetime import date, timedelta
 
 from ..vars import console, logger
 from ..vars import squirrel_art
@@ -37,6 +38,12 @@ def _overview(project_data, watches):
 
 
 def _barchart(watches):
+    def make_dict(watches):
+        d = {}
+        for watch in watches:
+            d[watch[0]] = int(watch[2]) - int(watch[1])
+        return d
+
     def normalize(stats):
         _max = max(stats)
         _min = min(stats)
@@ -62,9 +69,11 @@ def _barchart(watches):
         console.print(Panel(output))
 
     logger.debug(f'_barchart: {watches}')
-    stats = list(map(lambda w: int(w[2]) - int(w[1]), watches[-5:]))
-    if len(stats) < 5:
-        stats = [8] * (5 - len(stats)) + stats
+    watches_d = make_dict(watches)
+    today = date.today()
+    dates = [(today - timedelta(i)).strftime('%d/%m/%Y') for i in reversed(range(0, 5))]
+    stats = [watches_d.get(d, 0) for d in dates]
+
     stats = normalize(stats)
     logger.debug(stats)
     plot(stats)
