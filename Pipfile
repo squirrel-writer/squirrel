@@ -7,10 +7,12 @@ name = "pypi"
 rich = "*"
 inotifyrecursive = "*"
 daemonize = "*"
+squirrel = {editable = true, path = "."}
 
 [dev-packages]
 codespell = "*"
 flake8 = "*"
+pipenv-setup = "*"
 
 [requires]
 python_version = "3.9"
