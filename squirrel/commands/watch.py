@@ -103,7 +103,7 @@ def daemon(wd, logger):
             total = engine.get_count(files)
             end = time.time()
             logger.info(
-                f'get_count({len(files)} files) -> {total} took {end - start}')
+                f'{engine.__name__}: get_count({len(files)} files) -> {total} took {end - start}')
 
             added = add_watch_entry(total, datetime.now())
             if added:
