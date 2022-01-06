@@ -6,10 +6,10 @@ import signal
 from datetime import datetime
 import logging
 
-from inotifyrecursive import INotify, flags
+# from inotifyrecursive import INotify, flags
 from daemonize import Daemonize
 
-from squirrel import plugin
+from squirrel.plugin import *
 from ..vars import logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, DAEMON_NAME, console
 from ..xml import add_watch_entry
 
@@ -72,44 +72,27 @@ def get_daemon_pid() -> int:
 
 
 def daemon(wd, logger):
-    watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE
 
-#set working dir
     os.chdir(wd)
-    logger.debug('Adding inotify watches')
-#tuple with working dir
-    watches = (wd, )
-#start Inotify (Watchdog)
-    i = INotify()
-#legger til alle watchdir til Inotify
-    for watch in watches:
-        i.add_watch_recursive(watch, watch_flags)
+    logger.debug('Adding WatchDog watches')
+    watches = wd
+    engine = Plugin.load_module()
+    # TODO: Add filetype to project.xml? So it can be the project spesific files
+    # can be called from "engine.file_type"
+    file_type = ['*.txt']
 
-# laster riktig type plugin etter hva som er definert i squirrel.xml
-    engine = plugin.load_module()
-
+    event_handler = Handler(patterns=file_type)
+    observer = Observer()
+    observer.schedule(event_handler, watches, recursive=True)
+    observer.start()
     while True:
-# Laster alle endrede filer til en List
-        events = i.read()
-
-# --> Endre 'count' til True hvis filen ikke er skjulet (.*)
-        files = get_files(wd)
-
-        # lazzy fix for when we get event from hidden files
-        # or files from hidden directories
-        count = False
-        for event in events:
-            fullpath = os.path.join(i.get_path(event.wd), event.name)
-            if fullpath in files:
-                count = True
-                break
-# <---
-
-        if count:
-            # time get_count
+        time.sleep(15)
+        if event_handler.files:
+            # For loop to prompt modified files to log
+            for file in event_handler.files:
+                logger.info(f'Found a modified file {file.split("/")[-1]}')
             start = time.time()
-# teller ord i alle filer som finnes i 'files'
-            total = engine.get_count(files)
+            total = engine.get_count(event_handler.files)
             end = time.time()
             logger.info(
                 f'{engine.__name__}: get_count({len(files)} files) -> {total} took {end - start}')
@@ -131,14 +114,3 @@ def setup_daemon_logger():
     keep_fds = [fh.stream.fileno()]
 
     return daemon_logger, keep_fds
-
-
-# TODO: we might benefit from this becoming a plugin
-def get_files(path):
-    find_output = subprocess.run(
-        f'find {path} -type f -not -path "*/[@.]*"',
-        shell=True,
-        capture_output=True,
-        text=True
-    )
-    return find_output.stdout.strip().split('\n')
