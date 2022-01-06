@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 rich = "*"
-inotifyrecursive = "*"
 daemonize = "*"
 tox = "*"
+watchdog = "*"
 
 [dev-packages]
 codespell = "*"
