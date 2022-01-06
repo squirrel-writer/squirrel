@@ -36,7 +36,8 @@ def build_project_file(data: dict, file):
     due_date.text = arg_due.strftime('%d/%m/%Y') if arg_due is not None else None
 
     goal = ET.SubElement(squirrel, 'goal')
-    goal.text = str(data['goal'])
+    arg_goal = data['goal']
+    goal.text = str(arg_goal) if arg_goal is not None else '0'
 
     project_type = ET.SubElement(squirrel, 'project-type')
     p_type = data.get('project_type', 'text')

@@ -3,6 +3,7 @@ import os
 import pytest
 
 from squirrel.squirrel import _main
+from squirrel.vars import project_file_path, watch_file_path
 from squirrel import xml
 
 
@@ -48,6 +49,30 @@ def test_incorrect_set_command(test_directory):
     assert e.value.code != 0
 
 
-def test_init_command(test_directory):
-    _main(['init'])
-    pass
+def test_init_file_creation(test_directory):
+    _main(['init', '-n', 'test_name'])
+    try:
+        with open(project_file_path, 'r') as f:
+            project = f.read()
+
+        with open(watch_file_path, 'r') as f:
+            watch = f.read()
+    except FileNotFoundError:
+        pytest.fail('file projects were not created')
+
+    # remove any whitespace to be able to create a
+    # test string without not worrying about indentation and stuff
+    project = ''.join(project.split())
+    watch = ''.join(watch.split())
+
+    assert project == f'<?xmlversion=\'1.0\'encoding=\'utf-8\'?>' \
+        '<squirrelname="test_name">' \
+        f'<pathsrc="{os.getcwd()}/.squirrel"/>' \
+        '<description/>' \
+        '<due-date/>' \
+        '<goal>0</goal>' \
+        '<project-type>text</project-type>' \
+        '</squirrel>'
+
+    assert watch == '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'\
+    '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
