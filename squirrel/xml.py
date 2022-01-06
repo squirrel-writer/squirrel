@@ -29,13 +29,14 @@ def build_project_file(data: dict, file):
     _ = ET.SubElement(squirrel, 'path', src=f'{os.path.dirname(file)}')
 
     description = ET.SubElement(squirrel, 'description')
-    description.text = data.get('description', '')
+    description.text = data['description']
 
     due_date = ET.SubElement(squirrel, 'due-date')
-    due_date.text = data.get('due', '').strftime('%d/%m/%Y')
+    arg_due = data['due']
+    due_date.text = arg_due.strftime('%d/%m/%Y') if arg_due is not None else None
 
     goal = ET.SubElement(squirrel, 'goal')
-    goal.text = str(data.get('goal', 0))
+    goal.text = str(data['goal'])
 
     project_type = ET.SubElement(squirrel, 'project-type')
     p_type = data.get('project_type', 'text')
@@ -80,7 +81,7 @@ def update_project_file(data: dict):
 
     if (due := data.get('due')) is not None:
         try:
-            squirrel.find('due-date').text = due
+            squirrel.find('due-date').text = due.strftime('%d/%m/%Y')
         except AttributeError:
             logger.error('due-date element was not found in the xml file'
                          'try init project again')
