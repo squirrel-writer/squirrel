@@ -234,7 +234,7 @@ def add_watch_entry(total, dt: datetime):
                                 'watches',
                                 prev_count=prev_count,
                                 date=dt.date().strftime('%d/%m/%Y'))
-        make_watch_entry(watches_date, str(dt), str(total))
+        make_watch_entry(watches, str(dt), str(total))
     else:
         return False
 

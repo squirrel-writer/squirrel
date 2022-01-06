@@ -5,6 +5,7 @@ from rich.logging import RichHandler
 from .argparsers import setup_parsers
 
 
+#TODO: make it return a return code
 def _main(args=None):
     parser = setup_parsers()
     args = parser.parse_args(args)

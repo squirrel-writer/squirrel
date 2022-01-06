@@ -24,7 +24,7 @@ def initialized(test_directory):
     _main(['init'])
 
 
-def test_set_command(initialized):
+def test_correct_set_command(initialized):
     _main(['set',
            '-p', 'texcount',
            '-n', 'test2',
@@ -39,5 +39,15 @@ def test_set_command(initialized):
     assert project_data['due-date'] == '01/01/2022'
 
 
-def test_init_command():
+def test_incorrect_set_command(test_directory):
+    """Test the set command when the project is not initialized"""
+    with pytest.raises(SystemExit) as e:
+        _main(['set', '-p', 'texcount'])
+
+    assert e.type == SystemExit
+    assert e.value.code != 0
+
+
+def test_init_command(test_directory):
+    _main(['init'])
     pass
