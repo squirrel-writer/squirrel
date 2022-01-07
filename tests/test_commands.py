@@ -2,27 +2,10 @@ import os
 
 import pytest
 
+from .fixtures import initialized, test_directory
 from squirrel.squirrel import _main
 from squirrel.vars import project_file_path, watch_file_path
 from squirrel import xml
-
-
-@pytest.fixture
-def test_directory(tmp_path):
-    cwd = os.getcwd()
-    d = tmp_path / 'test_directory'
-    d.mkdir()
-    os.chdir(str(d))
-
-    yield True
-
-    #teardown
-    os.chdir(cwd)
-
-
-@pytest.fixture
-def initialized(test_directory):
-    _main(['init'])
 
 
 def test_correct_set_command(initialized):
