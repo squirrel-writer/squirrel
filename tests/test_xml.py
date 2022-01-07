@@ -18,3 +18,15 @@ def test_get_data_from_project_file(test_directory):
         'project-type': 'text'
     }
 
+    # Reinitialize the project with no parameter
+    _main(['init', '-y'])
+
+    assert xml.get_data_from_project_file() == {
+        'name': None,
+        'path': os.path.join(os.getcwd(), DIRECTORY_NAME),
+        'description': None,
+        'goal': '0',
+        'due-date': None,
+        'project-type': 'text'
+    }
+

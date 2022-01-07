@@ -24,7 +24,7 @@ def build_project(data: dict, path):
 
 
 def build_project_file(data: dict, file):
-    squirrel = ET.Element('squirrel', name=f"{data.get('name', '')}")
+    squirrel = ET.Element('squirrel', name=f"{data['name'] if data['name'] is not None else ''}")
 
     _ = ET.SubElement(squirrel, 'path', src=f'{os.path.dirname(file)}')
 
@@ -104,6 +104,7 @@ def get_data_from_project_file(basedir=''):
 
     try:
         name = squirrel.attrib['name']
+        name = name if name != '' else None
     except (AttributeError, KeyError):
         logger.error('Could not find name attribute')
         name = None
