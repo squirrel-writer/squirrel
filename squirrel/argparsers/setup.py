@@ -100,6 +100,11 @@ def _setup_init_parser(subparsers):
         help='specify the project type'
     )
 
+    init_parser.add_argument(
+        '-y',
+        action='store_true',
+        help='ignore input prompts'
+    )
     init_parser.set_defaults(func=init)
 
     return init_parser
