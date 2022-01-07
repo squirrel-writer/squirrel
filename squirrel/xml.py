@@ -24,19 +24,19 @@ def build_project(data: dict, path):
 
 
 def build_project_file(data: dict, file):
-    squirrel = ET.Element('squirrel', name=f"{data['name'] if data['name'] is not None else ''}")
+    squirrel = ET.Element('squirrel', name=f"{data.get('name') if data.get('name') is not None else ''}")
 
     _ = ET.SubElement(squirrel, 'path', src=f'{os.path.dirname(file)}')
 
     description = ET.SubElement(squirrel, 'description')
-    description.text = data['description']
+    description.text = data.get('description')
 
     due_date = ET.SubElement(squirrel, 'due-date')
-    arg_due = data['due']
+    arg_due = data.get('due')
     due_date.text = arg_due.strftime('%d/%m/%Y') if arg_due is not None else None
 
     goal = ET.SubElement(squirrel, 'goal')
-    arg_goal = data['goal']
+    arg_goal = data.get('goal')
     goal.text = str(arg_goal) if arg_goal is not None else '0'
 
     project_type = ET.SubElement(squirrel, 'project-type')
