@@ -16,13 +16,15 @@ class Plugin():
         return importlib.import_module(f'squirrel.plugins.{project_type}')
 
 class Handler(PatternMatchingEventHandler):
-    files = []
 
-    def __init__(self, patterns):
-        # Set the patterns for PatternMatchingEventHandler
+    def __init__(self):
+        """Set the patterns for PatternMatchingEventHandler"""
+        # 'ignore_patterns' ignore hidden files, atleast on unix filesystems
+        # List used to store modified and created files
+        self.files = []
         PatternMatchingEventHandler.__init__(
-            self, patterns=patterns, ignore_patterns=['.*'], ignore_directories=True)
-  
+            self, ignore_patterns=['.*'], ignore_directories=True)
+
     def on_created(self, event):
         # Event is created, you can process it now
         if event.src_path not in self.files:
