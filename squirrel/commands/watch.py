@@ -77,11 +77,8 @@ def daemon(wd, logger):
     logger.debug('Adding WatchDog watches')
     watches = wd
     engine = Plugin.load_module()
-    # TODO: Add filetype to project.xml? So it can be the project spesific files
-    # can be called from "engine.file_type"
-    file_type = ['*.txt']
 
-    event_handler = Handler(patterns=file_type)
+    event_handler = Handler()
     observer = Observer()
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
