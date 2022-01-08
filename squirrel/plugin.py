@@ -25,15 +25,26 @@ class Handler(PatternMatchingEventHandler):
         PatternMatchingEventHandler.__init__(
             self, ignore_patterns=['.*'], ignore_directories=True)
 
+    def not_hidden_folder(self, file):
+        """Checks for hidden folders"""
+        path = file.split('/')
+        for dir in path:
+            if dir.startswith('.'):
+                return False
+                break
+        return True
+
     def on_created(self, event):
-        # Event is created, you can process it now
-        if event.src_path not in self.files:
-            self.files.append(event.src_path)
-            logging.info
-             
+        """Event is created, you can process it now"""
+        # if statement to prevent 'files' to have more than one item of each file
+        if self.not_hidden_folder(event.src_path):
+            if event.src_path not in self.files:
+                self.files.append(event.src_path)
 
   
     def on_modified(self, event):
-        # Event is modified, you can process it now
-        if event.src_path not in self.files:
-            self.files.append(event.src_path) 
+        """Event is modified, you can process it now"""
+        # if statement to prevent 'files' to have more than one item of each file
+        if self.not_hidden_folder(event.src_path):
+            if event.src_path not in self.files:
+                self.files.append(event.src_path)
