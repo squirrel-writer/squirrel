@@ -23,7 +23,7 @@ class Handler(PatternMatchingEventHandler):
         # List used to store modified and created files
         self.files = []
         PatternMatchingEventHandler.__init__(
-            self, ignore_patterns=['.*'], ignore_directories=True)
+            self, ignore_patterns=['.*', '~*', '*~'], ignore_directories=True)
 
     def not_hidden_folder(self, file):
         """Checks for hidden folders"""
