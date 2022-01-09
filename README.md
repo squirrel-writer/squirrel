@@ -19,7 +19,9 @@ Here are the plugins available now:
 
 *hmm, haven't found your project type? you can write Python code? Please make a pull request :)*
 
-## Installation
+## Requirement & Installation
+`squirrel` is tested for `python3.9` and `python3.10`. Other versions are not guaranteed to work. All the pip dependencies are in the `Pipefile`.
+
 ### Users
 *Coming soon*
 ### Devs
@@ -27,7 +29,7 @@ Grab the repo, install dependencies, and voila.
 ```sh
 git clone https://github.com/squirrel-writer/squirrel
 cd squirrel
-pipenv install && pipenv shell
+pipenv install --dev && pipenv shell
 # Install the package in editable mode
 pipenv install -e .
 ```
