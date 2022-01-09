@@ -25,11 +25,16 @@ def _overview(project_data, watches):
         _, prev, total = watches[-1]
         today = int(total) - int(prev)
 
+    goal_reached = True if total > project_data['goal'] else False
+    total_and_goal = f'{total}/{project_data["goal"]}'
+    if goal_reached:
+        total_and_goal = f'[green]{total_and_goal}[/]'
+
     texts = [
         f'[cyan bold underline]{project_data["name"]}[/]',
         f'[italic]{project_data["description"]}[/]',
         f'[hot_pink3]Today:[/] {today}[italic] words[/]',
-        f'[hot_pink3]Goal:[/] {total}/{project_data["goal"]}',
+        f'[hot_pink3]Goal:[/] {total_and_goal}',
         f'[hot_pink3]Due Data:[/] {project_data["due-date"]}',
         f'[hot_pink3]Project Type:[/] {project_data["project-type"]}',
     ]
