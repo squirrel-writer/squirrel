@@ -31,7 +31,8 @@ git clone https://github.com/squirrel-writer/squirrel
 cd squirrel
 pipenv install --dev && pipenv shell
 # Install the package in editable mode
-pipenv install -e .
+# use pip with this command, so that Pipfile doesn't get modified
+pip install -e .
 ```
 ## Usage
 There 4 main verbs to interact with squirrel:
