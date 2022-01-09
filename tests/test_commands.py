@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from .fixtures import initialized, test_directory
+from .fixtures import initialized, test_directory, watching
 from squirrel.squirrel import _main
-from squirrel.vars import project_file_path, watch_file_path
+from squirrel.vars import project_file_path, watch_file_path, watch_daemon_pidfile_path, watch_daemon_logfile_path
 from squirrel import xml
 
 
@@ -59,3 +59,14 @@ def test_init_file_creation(test_directory):
 
     assert watch == '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'\
     '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
+
+
+def test_watch_command_after_init(watching):
+    # test if log file was created
+    assert os.path.isfile(watch_daemon_logfile_path)
+    # test if pidfile was created
+    assert os.path.isfile(watch_daemon_pidfile_path)
+
+
+def test_watch_command_before_init(test_directory):
+    pass

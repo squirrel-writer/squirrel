@@ -1,4 +1,6 @@
 import os
+import time
+import multiprocessing as mp
 
 import pytest
 
@@ -21,3 +23,13 @@ def test_directory(tmp_path):
 @pytest.fixture
 def initialized(test_directory):
     _main(['init'])
+
+
+@pytest.fixture
+def watching(initialized):
+    watch = mp.Process(target=_main, args=(['watch', 'start', '--daemon'],))
+    watch.start()
+    time.sleep(5)
+    yield True
+    _main(['watch', 'stop'])
+
