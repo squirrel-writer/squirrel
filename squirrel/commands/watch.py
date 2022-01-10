@@ -5,7 +5,6 @@ import signal
 from datetime import datetime
 import logging
 
-# from inotifyrecursive import INotify, flags
 from daemonize import Daemonize
 
 from squirrel.plugin import *
@@ -50,6 +49,7 @@ def stop(args):
     os.kill(pid, signal.SIGTERM)
     console.print('Stopping squirreld watcher')
 
+
 def pid_exists(pid):
     try:
         os.kill(pid, 0)
@@ -57,6 +57,7 @@ def pid_exists(pid):
         return False
     else:
         return True
+
 
 def get_daemon_pid() -> int:
     path = watch_daemon_pidfile_path
@@ -67,23 +68,25 @@ def get_daemon_pid() -> int:
     except FileNotFoundError:
         return 0
 
+
 def file_not_exists(files, logger):
     """Check if file exists and remove it from list of watched file if not"""
     for file in files:
         if not os.path.exists(file):
-            logger.info(f'Removed temporary/deleted file <{file.split("/")[-1]}>')
+            logger.info(
+                f'Removed temporary/deleted file <{file.split("/")[-1]}>')
             files.remove(file)
+
 
 def daemon(wd, logger):
     watches = wd
-    #os.chdir(wd)
     # Loads file in project directory into project_files list
     project_files = Plugin.get_files(wd)
-    logger.info(f'Found {len(project_files)} in project folder')
+    logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
     event_handler = Handler()
     # Timeout pauses the observer for x amount of seconds
-    observer = Observer(timeout=10)
+    observer = Observer(timeout=15)
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
     logger.debug('Watchdog initialized')
@@ -104,12 +107,13 @@ def daemon(wd, logger):
             total_time = round(end - start, 3)
             logger.info(
                 f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {total_time}')
-
+            # Adds new entry to watch-data.xml
             added = add_watch_entry(total, datetime.now())
             if added:
                 logger.debug('A new watch entry was added')
-            #Clears list before a new run
+            # Clears list before a new run
             event_handler.files.clear()
+
 
 def setup_daemon_logger():
     daemon_logger = logging.getLogger(DAEMON_NAME)

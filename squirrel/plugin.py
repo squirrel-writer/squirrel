@@ -18,11 +18,12 @@ class Plugin():
 
     def get_files(path):
         find_output = subprocess.run(
-        f'find {path} -type f -not -path "*/[@.]*"',
-        shell=True,
-        capture_output=True,
-        text=True)
+            f'find {path} -type f -not -path "*/[@.]*"',
+            shell=True,
+            capture_output=True,
+            text=True)
         return find_output.stdout.strip().split('\n')
+
 
 class Handler(PatternMatchingEventHandler):
 
@@ -50,7 +51,6 @@ class Handler(PatternMatchingEventHandler):
             if event.src_path not in self.files:
                 self.files.append(event.src_path)
 
-  
     def on_modified(self, event):
         """Event is modified, you can process it now"""
         # if statement to prevent 'files' to have more than one item of each file
