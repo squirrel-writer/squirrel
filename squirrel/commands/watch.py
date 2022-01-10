@@ -1,5 +1,4 @@
 import os
-import subprocess
 import time
 import functools
 import signal
@@ -51,7 +50,6 @@ def stop(args):
     os.kill(pid, signal.SIGTERM)
     console.print('Stopping squirreld watcher')
 
-
 def pid_exists(pid):
     try:
         os.kill(pid, 0)
@@ -59,7 +57,6 @@ def pid_exists(pid):
         return False
     else:
         return True
-
 
 def get_daemon_pid() -> int:
     path = watch_daemon_pidfile_path
@@ -78,18 +75,19 @@ def file_not_exists(files, logger):
             files.remove(file)
 
 def daemon(wd, logger):
-
-    os.chdir(wd)
-    logger.debug('Adding WatchDog watches')
     watches = wd
+    #os.chdir(wd)
+    # Loads file in project directory into project_files list
+    project_files = Plugin.get_files(wd)
+    logger.info(f'Found {len(project_files)} in project folder')
     engine = Plugin.load_module()
-
     event_handler = Handler()
-    observer = Observer()
+    # Timeout pauses the observer for x amount of seconds
+    observer = Observer(timeout=10)
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
+    logger.debug('Watchdog initialized')
     while True:
-        time.sleep(15)
         if event_handler.files:
             # For loop to prompt modified files to log
             for file in event_handler.files:
@@ -101,14 +99,17 @@ def daemon(wd, logger):
             file_not_exists(project_files, logger)
             # Counts files in project folder
             start = time.time()
-            total = engine.get_count(event_handler.files)
+            total = engine.get_count(project_files)
             end = time.time()
+            total_time = round(end - start, 3)
             logger.info(
-                f'{engine.__name__}: get_count({len(files)} files) -> {total} took {end - start}')
+                f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {total_time}')
 
             added = add_watch_entry(total, datetime.now())
             if added:
                 logger.debug('A new watch entry was added')
+            #Clears list before a new run
+            event_handler.files.clear()
 
 def setup_daemon_logger():
     daemon_logger = logging.getLogger(DAEMON_NAME)
