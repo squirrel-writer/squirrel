@@ -6,6 +6,7 @@ from datetime import datetime
 import logging
 
 from daemonize import Daemonize
+from watchdog.events import EVENT_TYPE_CREATED, EVENT_TYPE_MODIFIED
 
 from squirrel.plugin import *
 from ..vars import logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, DAEMON_NAME, console
@@ -22,6 +23,7 @@ def watch(args):
                       pid=watch_daemon_pidfile_path,
                       action=functools.partial(daemon, wd, daemon_logger),
                       logger=daemon_logger,
+                      chdir=wd,
                       keep_fds=keep_fds)
         d.start()
     else:
@@ -85,8 +87,7 @@ def daemon(wd, logger):
     logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
     event_handler = Handler()
-    # Timeout pauses the observer for x amount of seconds
-    observer = Observer(timeout=15)
+    observer = Observer()
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
     logger.debug('Watchdog initialized')
@@ -113,6 +114,7 @@ def daemon(wd, logger):
                 logger.debug('A new watch entry was added')
             # Clears list before a new run
             event_handler.files.clear()
+            time.sleep(15)
 
 
 def setup_daemon_logger():
