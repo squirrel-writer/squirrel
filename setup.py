@@ -9,7 +9,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="squirrel-writer",
-    version="0.0.1",
+    version="0.0.2",
     author="Mohieddine Drissi",
     author_email="m.drissi@protonmail.com",
     url="https://github.com/squirrel-writer/squirrel",
