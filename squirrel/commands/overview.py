@@ -79,12 +79,13 @@ def _barchart(watches):
     logger.debug(f'_barchart: {watches}')
     watches_d = make_dict(watches)
     today = date.today()
-    dates = [(today - timedelta(i)).strftime('%d/%m/%Y') for i in reversed(range(0, 5))]
+    dates = [(today - timedelta(i)).strftime('%d/%m/%Y')
+             for i in reversed(range(0, 5))]
     stats = [watches_d.get(d, 0) for d in dates]
 
     stats_normalized = normalize(list(stats))
     logger.debug(stats_normalized)
     output = plot(stats_normalized)
 
-    console.print(Columns([Panel(output), format(stats)], expand=False, padding=5))
-
+    console.print(
+        Columns([Panel(output), format(stats)], expand=False, padding=5))
