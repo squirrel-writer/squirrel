@@ -40,6 +40,11 @@ pipenv install --dev && pipenv shell
 # Install the package in editable mode
 # use pip with this command, so that Pipfile doesn't get modified
 pip install -e .
+
+# To run unittests
+pytest
+# Or use tox to run tests on multiple versions
+tox
 ```
 ## Usage
 There 4 main verbs to interact with squirrel:
@@ -65,3 +70,24 @@ squirrel watch start --daemon
 squirrel watch status
 squirrel watch stop
 ```
+
+## Contributors
+
+### How can you help
+If you're looking to help `squirrel` become better, we're always looking
+for people to test, report any bugs, improve documentation,
+and submit any fixes or features. 
+Any contribution (even documentation) goes a long way.
+
+### Pull Requests
+PRs are welcome :). Make sure to open an issue before submitting the
+PR so that everybody can chip in with their opinion.
+
+If your PR with be changing some dependencies, don't forget to update `Pipfile.lock` as well as the dependencies in `setup.py` with `pipenv-setup`.
+
+### Testing
+The testing suite is very small at the moment (about 7 tests). 
+We need help in making it robust and exhaustive. Any contribution on this regard is highly appreciated.
+
+`squirrel` is still in an experimental stage. Bugs are probably present, so any testing and bug reporting is welcome.
+
