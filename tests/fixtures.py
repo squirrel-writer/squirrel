@@ -16,7 +16,7 @@ def test_directory(tmp_path):
 
     yield True
 
-    #teardown
+    # teardown
     os.chdir(cwd)
 
 
@@ -32,4 +32,3 @@ def watching(initialized):
     time.sleep(5)
     yield True
     _main(['watch', 'stop'])
-

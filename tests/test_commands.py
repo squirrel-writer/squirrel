@@ -14,7 +14,7 @@ def test_correct_set_command(initialized):
            '-n', 'test2',
            '-g', '15',
            '--due', '01/01/2022'
-    ])
+           ])
 
     project_data = xml.get_data_from_project_file()
     assert project_data['project-type'] == 'texcount'
@@ -58,7 +58,7 @@ def test_init_file_creation(test_directory):
         '</squirrel>'
 
     assert watch == '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'\
-    '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
+        '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
 
 
 def test_watch_command_after_init(watching):

@@ -41,5 +41,5 @@ setup(
         "License :: OSI Approved :: GPLv3 License",
     ],
     python_requires=">=3.8",
-    entry_points={"console_scripts": ["squirrel=squirrel.squirrel:_main",],},
+    entry_points={"console_scripts": ["squirrel=squirrel.squirrel:_main", ], },
 )

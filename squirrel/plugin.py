@@ -36,7 +36,7 @@ class Handler(PatternMatchingEventHandler):
         self.files = []
         PatternMatchingEventHandler.__init__(
             self, ignore_patterns=['.*', '~*', '*~'], ignore_directories=True)
-        
+
     def append_watch(self, file):
         """Method to make sure only one event of each file gets processed"""
         if self.not_hidden_folder(file):
