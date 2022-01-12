@@ -14,7 +14,6 @@ codespell = "*"
 flake8 = "*"
 pipenv-setup = "*"
 pytest = "*"
-mypy = "*"
 
 [requires]
 python_version = "3.9"
