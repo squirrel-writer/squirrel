@@ -87,7 +87,7 @@ def daemon(wd, logger):
     logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
     event_handler = Handler()
-    observer = Observer()
+    observer = Observer(timeout=60)
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
     logger.debug('Watchdog initialized')
@@ -114,7 +114,7 @@ def daemon(wd, logger):
                 logger.debug('A new watch entry was added')
             # Clears list before a new run
             event_handler.files.clear()
-            time.sleep(15)
+            time.sleep(60*3)
 
 
 def setup_daemon_logger():
