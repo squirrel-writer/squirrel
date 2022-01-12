@@ -50,7 +50,7 @@ def _barchart(watches):
         return d
 
     def format(stats):
-        return '\n'.join([f'• {stat} [italic]words[/]' for stat in stats])
+        return '\n'.join([f'• {dates[i]} : {stat} [italic]words[/]' for i, stat in enumerate(stats)])
 
     def normalize(stats):
         _max = max(stats)
