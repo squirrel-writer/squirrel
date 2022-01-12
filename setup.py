@@ -8,7 +8,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(
-    name="squirrel",
+    name="squirrel-writer",
     version="0.0.1",
     author="Mohieddine Drissi",
     author_email="m.drissi@protonmail.com",
@@ -38,7 +38,10 @@ setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3.8",
-        "License :: OSI Approved :: GPLv3 License",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Development Status :: 2 - Pre-Alpha",
     ],
     python_requires=">=3.8",
     entry_points={"console_scripts": ["squirrel=squirrel.squirrel:_main", ], },
