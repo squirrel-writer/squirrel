@@ -16,6 +16,7 @@ pipenv-setup = "*"
 pytest = "*"
 autopep8 = "*"
 check-manifest = "*"
+twine = "*"
 
 [requires]
 python_version = "3.9"
