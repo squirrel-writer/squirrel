@@ -20,7 +20,14 @@ Here are the plugins available now:
 *hmm, haven't found your project type? you can write Python code? Please make a pull request :)*
 
 ## Requirement & Installation
-`squirrel` is tested for `python3.9` and `python3.10`. Other versions are not guaranteed to work. All the pip dependencies are in the `Pipefile`.
+**Tested Python versions:**
+* python 3.8
+* python 3.9
+* python 3.10
+
+**Python versions:**
+
+All pip dependencies are in the `Pipfile` file.
 
 ### Users
 *Coming soon*
