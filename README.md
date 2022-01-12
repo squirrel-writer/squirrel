@@ -30,7 +30,11 @@ Here are the plugins available now:
 All pip dependencies are in the `Pipfile` file.
 
 ### Users
-*Coming soon*
+You can install `squirrel` with pip
+```sh
+pip install squirrel-writer
+```
+
 ### Devs
 Grab the repo, install dependencies, and voila.
 ```sh
