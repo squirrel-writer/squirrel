@@ -1,0 +1,12 @@
+# Sample ignore file
+# '.*', '*~', '*~' and '.<dir>' is ignored by default and and doesn't need to be added
+
+sample/
+tmp/
+
+*.tmp
+*.old
+*.py
+
+test1.txt
+text2.txt
