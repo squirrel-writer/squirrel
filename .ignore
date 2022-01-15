@@ -6,7 +6,7 @@ tmp/
 
 *.tmp
 *.old
-*.py
+*.pyc
 
 test1.txt
 text2.txt
