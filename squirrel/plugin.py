@@ -22,22 +22,25 @@ class Plugin():
         # Ignores have to be converted to tuple and remove '*' at the beginning of ext
         ignores_ext = tuple(i[1:] for i in ignores.get('ext'))
         ignores_file = tuple(ignores.get('file'))
+        ignores_dir = tuple(i[:-1] for i in ignores.get('dir_full'))
         project_files = []
         for root, dirs, files in os.walk(path):
             for file in files:
                 if not file.endswith(ignores_ext) \
                         and not file.startswith('.') \
-                        and file not in ignores_file:
+                        and file not in ignores_file \
+                        and root not in ignores_dir:
                     project_files.append(os.path.join(root, file))
         return project_files
 
     @staticmethod
-    def import_ignores(file):
+    def import_ignores(wd, file):
         """Function to read ignore file and store extensions, dir and files
          to a dictionary"""
         ignores = {
             'ext': [],
             'dir': [],
+            'dir_full': [],
             'file': []
             }
         with open(file, 'r') as file:
@@ -49,6 +52,7 @@ class Plugin():
                     ignores['ext'].append(add_line)
                 elif add_line.endswith('/'):
                     ignores['dir'].append(add_line)
+                    ignores['dir_full'].append(''.join(f'{wd}/{add_line}'))
                 else:
                     ignores['file'].append(add_line)
         return ignores
