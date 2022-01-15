@@ -26,6 +26,28 @@ class Plugin():
             text=True)
         return find_output.stdout.strip().split('\n')
 
+    @staticmethod
+    def import_ignores(file):
+        """Function to read ignore file and store extensions, dir and files
+         to a dictionary"""
+        ignores = {
+            'ext': [],
+            'dir': [],
+            'file': []
+            }
+        with open(file, 'r') as file:
+            for line in file.readlines():
+                add_line = line.strip()
+                if add_line.startswith('#') or add_line == '':
+                    continue
+                elif add_line.startswith('*'):
+                    ignores['ext'].append(add_line)
+                elif add_line.endswith('/'):
+                    ignores['dir'].append(add_line)
+                else:
+                    ignores['file'].append(add_line)
+        return ignores
+
 
 class Handler(PatternMatchingEventHandler):
 
