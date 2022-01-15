@@ -1,5 +1,5 @@
 import importlib
-import subprocess
+import os
 import logging
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
@@ -18,13 +18,18 @@ class Plugin():
         return importlib.import_module(f'squirrel.plugins.{project_type}')
 
     @staticmethod
-    def get_files(path):
-        find_output = subprocess.run(
-            f'find {path} -type f -not -path "*/[@.]*"',
-            shell=True,
-            capture_output=True,
-            text=True)
-        return find_output.stdout.strip().split('\n')
+    def get_files(path, ignores):
+        # Ignores have to be converted to tuple and remove '*' at the beginning of ext
+        ignores_ext = tuple(i[1:] for i in ignores.get('ext'))
+        ignores_file = tuple(ignores.get('file'))
+        project_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if not file.endswith(ignores_ext) \
+                        and not file.startswith('.') \
+                        and file not in ignores_file:
+                    project_files.append(os.path.join(root, file))
+        return project_files
 
     @staticmethod
     def import_ignores(file):
