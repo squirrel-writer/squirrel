@@ -25,12 +25,19 @@ class Plugin():
         ignores_dir = tuple(i[:-1] for i in ignores.get('dir_full'))
         project_files = []
         for root, dirs, files in os.walk(path):
-            for file in files:
-                if not file.endswith(ignores_ext) \
-                        and not file.startswith('.') \
-                        and file not in ignores_file \
-                        and root not in ignores_dir:
-                    project_files.append(os.path.join(root, file))
+            for dir in root.split('/'):
+                if dir.startswith('.'):
+                    get_files = False
+                    break
+                get_files = True 
+            while get_files:
+                for file in files:
+                    if not file.endswith(ignores_ext) \
+                            and not file.startswith('.') \
+                            and file not in ignores_file \
+                            and root not in ignores_dir:
+                        project_files.append(os.path.join(root, file))
+                get_files = False
         return project_files
 
     @staticmethod
