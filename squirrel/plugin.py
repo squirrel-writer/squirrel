@@ -41,7 +41,7 @@ class Plugin():
         return project_files
 
     @staticmethod
-    def import_ignores(wd, file):
+    def import_ignores(wd, file, logger):
         """Function to read ignore file and store extensions, dir and files
          to a dictionary"""
         ignores = {
@@ -50,18 +50,21 @@ class Plugin():
             'dir_full': [],
             'file': []
             }
-        with open(file, 'r') as file:
-            for line in file.readlines():
-                add_line = line.strip()
-                if add_line.startswith('#') or add_line == '':
-                    continue
-                elif add_line.startswith('*'):
-                    ignores['ext'].append(add_line)
-                elif add_line.endswith('/'):
-                    ignores['dir'].append(add_line)
-                    ignores['dir_full'].append(''.join(f'{wd}/{add_line}'))
-                else:
-                    ignores['file'].append(add_line)
+        try:
+            with open(file, 'r') as file:
+                for line in file.readlines():
+                    add_line = line.strip()
+                    if add_line.startswith('#') or add_line == '':
+                        continue
+                    elif add_line.startswith('*'):
+                        ignores['ext'].append(add_line)
+                    elif add_line.endswith('/'):
+                        ignores['dir'].append(add_line)
+                        ignores['dir_full'].append(''.join(f'{wd}/{add_line}'))
+                    else:
+                        ignores['file'].append(add_line)
+        except FileNotFoundError:
+            logger.debug(f'{__name__} File not found <{file}>')
         return ignores
 
 
