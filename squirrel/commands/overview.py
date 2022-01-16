@@ -23,9 +23,17 @@ def _overview(project_data, watches):
     today = 0
     if len(watches):
         _, prev, total = watches[-1]
-        today = int(total) - int(prev)
+        total = int(total)
+        today = total - int(prev)
 
-    goal_reached = True if total > project_data['goal'] else False
+    goal = project_data.get('goal', None)
+    if goal is None:
+        goal = 0
+
+    print(total, goal)
+    print(type(total), type(goal))
+    goal_reached = True if total > int(goal) else False
+    goal_reached = False
     total_and_goal = f'{total}/{project_data["goal"]}'
     if goal_reached:
         total_and_goal = f'[green]{total_and_goal}[/]'
