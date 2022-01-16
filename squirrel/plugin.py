@@ -70,17 +70,20 @@ class Plugin():
 
 class Handler(PatternMatchingEventHandler):
 
-    def __init__(self):
+    def __init__(self, ignores):
         """Set the patterns for PatternMatchingEventHandler"""
         # 'ignore_patterns' ignore hidden files, atleast on unix filesystems
         # List used to store modified and created files
         self.files = []
+        self.ignores = ignores
+        std_ignore = ['.*', '~*', '*~']
+        ignore = std_ignore + self.ignores.get('ext')
         PatternMatchingEventHandler.__init__(
-            self, ignore_patterns=['.*', '~*', '*~'], ignore_directories=True)
+            self, ignore_patterns=ignore, ignore_directories=True)
 
     def append_watch(self, file):
         """Method to make sure only one event of each file gets processed"""
-        if self.not_hidden_folder(file):
+        if self.not_hidden_folder(file) and self.not_ignored_folder(file):
             if file not in self.files:
                 self.files.append(file)
 
@@ -92,6 +95,11 @@ class Handler(PatternMatchingEventHandler):
                 return False
                 break
         return True
+
+    def not_ignored_folder(self, file):
+        if f'{"".join(file.rsplit("/", 1)[:-1])}/' \
+                not in self.ignores.get('dir_full'):
+            return True
 
     def on_created(self, event):
         """Event is created, you can process it now"""
