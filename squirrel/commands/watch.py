@@ -82,8 +82,11 @@ def file_not_exists(files, logger):
 
 def daemon(wd, logger):
     watches = wd
+    # Loads '.ignore' into a variable
+    ignores = Plugin.import_ignores(wd, '.ignore', logger)
+    logger.debug(f'Added ignores {ignores}')
     # Loads file in project directory into project_files list
-    project_files = Plugin.get_files(wd)
+    project_files = Plugin.get_files(wd, ignores)
     logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
     event_handler = Handler()
