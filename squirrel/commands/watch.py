@@ -89,7 +89,7 @@ def daemon(wd, logger):
     project_files = Plugin.get_files(wd, ignores)
     logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
-    event_handler = Handler()
+    event_handler = Handler(ignores)
     observer = Observer(timeout=60)
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
