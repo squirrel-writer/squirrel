@@ -6,10 +6,11 @@ from datetime import datetime
 import logging
 
 from daemonize import Daemonize
-from watchdog.events import EVENT_TYPE_CREATED, EVENT_TYPE_MODIFIED
 
-from squirrel.plugin import *
-from ..vars import logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, DAEMON_NAME, console
+from squirrel.plugin import Plugin, Handler, Observer
+from ..vars import \
+    logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
+    DAEMON_NAME, console
 from ..xml import add_watch_entry
 
 
