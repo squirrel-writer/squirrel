@@ -29,7 +29,7 @@ class Plugin():
                 if dir.startswith('.'):
                     get_files = False
                     break
-                get_files = True 
+                get_files = True
             while get_files:
                 for file in files:
                     if not file.endswith(ignores_ext) \
@@ -77,7 +77,8 @@ class Handler(PatternMatchingEventHandler):
         self.files = []
         self.ignores = ignores
         std_ignore = ['.*', '~*', '*~']
-        ignore = std_ignore + self.ignores.get('ext')
+        ignore = \
+            std_ignore + self.ignores.get('ext') + self.ignores.get('file')
         PatternMatchingEventHandler.__init__(
             self, ignore_patterns=ignore, ignore_directories=True)
 
