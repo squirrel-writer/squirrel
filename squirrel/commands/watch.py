@@ -10,7 +10,7 @@ from daemonize import Daemonize
 from squirrel.plugin import Plugin, Handler, Observer
 from ..vars import \
     logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
-    DAEMON_NAME, console
+    DAEMON_NAME, ignore_file_path, console
 from ..xml import add_watch_entry
 
 
