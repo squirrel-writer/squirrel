@@ -1,6 +1,6 @@
 import importlib
 import os
-import logging
+from glob import glob
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
@@ -19,25 +19,18 @@ class Plugin():
 
     @staticmethod
     def get_files(path, ignores):
-        # Ignores have to be converted to tuple and remove '*' at the beginning of ext
+        """Function to find all non-ignored files i project directory"""
         ignores_ext = tuple(i[1:] for i in ignores.get('ext'))
         ignores_file = tuple(ignores.get('file'))
         ignores_dir = tuple(i[:-1] for i in ignores.get('dir_full'))
         project_files = []
-        for root, dirs, files in os.walk(path):
-            for dir in root.split('/'):
-                if dir.startswith('.'):
-                    get_files = False
-                    break
-                get_files = True
-            while get_files:
-                for file in files:
-                    if not file.endswith(ignores_ext) \
-                            and not file.startswith('.') \
-                            and file not in ignores_file \
-                            and root not in ignores_dir:
-                        project_files.append(os.path.join(root, file))
-                get_files = False
+        for file in glob('**/*', recursive=True):
+            file_path = os.path.join(path, file)
+            if not os.path.isdir(file_path):
+                if not file_path.endswith(ignores_ext) \
+                        and file_path.rsplit('/', 1)[1] not in ignores_file \
+                        and file_path.rsplit('/', 1)[0] not in ignores_dir:
+                    project_files.append(file_path)
         return project_files
 
     @staticmethod
