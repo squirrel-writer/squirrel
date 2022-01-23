@@ -74,20 +74,22 @@ def get_daemon_pid() -> int:
 
 def file_not_exists(files, logger):
     """Check if file exists and remove it from list of watched file if not"""
+    remove_files = set()
     for file in files:
         if not os.path.exists(file):
             logger.info(
                 f'Removed temporary/deleted file <{file.split("/")[-1]}>')
-            files.remove(file)
+            remove_files.add(file)
+    files.difference_update(remove_files)
 
 
 def daemon(wd, logger):
     watches = wd
     # Loads '.ignore' into a variable
-    ignores = Plugin.import_ignores(wd, '.ignore', logger)
+    ignores = Plugin.import_ignores(wd, ignore_file_path, logger)
     logger.debug(f'Added ignores {ignores}')
     # Loads file in project directory into project_files list
-    project_files = Plugin.get_files(wd, ignores)
+    project_files = set(Plugin.get_files(wd, ignores))
     logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
     event_handler = Handler(ignores)
@@ -101,8 +103,8 @@ def daemon(wd, logger):
             for file in event_handler.files:
                 logger.info(f'Found a modified file <{file.split("/")[-1]}>')
                 # Check if modified file exists in project_file list
-                if file not in project_files:
-                    project_files.append(file)
+                # if file not in project_files:
+                project_files.add(file)
             # Check if file exists
             file_not_exists(project_files, logger)
             # Counts files in project folder
