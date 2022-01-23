@@ -3,15 +3,16 @@ import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-from .vars import logger, console
-from .vars import PROJECT_FILENAME, WATCH_FILENAME
+from .vars import ignore_file_content, logger, console
+from .vars import PROJECT_FILENAME, WATCH_FILENAME, IGNORE_FILENAME
 from .vars import project_file_path, watch_file_path
 
 
 def build_project(data: dict, path):
     files = [
         os.path.join(path, PROJECT_FILENAME),
-        os.path.join(path, WATCH_FILENAME)
+        os.path.join(path, WATCH_FILENAME),
+        os.path.join(path, IGNORE_FILENAME)
     ]
     os.mkdir(path)
 
@@ -21,6 +22,7 @@ def build_project(data: dict, path):
 
     build_project_file(data, files[0])
     build_watch_file(files[1])
+    build_ignore_file(files[2])
 
 
 def build_project_file(data: dict, file):
@@ -58,6 +60,11 @@ def build_watch_file(file):
     tree = ET.ElementTree(squirrel)
     ET.indent(tree)
     tree.write(file, encoding='utf-8', xml_declaration=True)
+
+
+def build_ignore_file(file):
+    with open(file, 'w') as f:
+        f.write(ignore_file_content)
 
 
 def update_project_file(data: dict):
