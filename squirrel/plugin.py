@@ -46,7 +46,6 @@ class Plugin():
          to a dictionary"""
         ignores = {
             'ext': [],
-            'dir': [],
             'dir_full': [],
             'file': []
             }
@@ -59,12 +58,11 @@ class Plugin():
                     elif add_line.startswith('*'):
                         ignores['ext'].append(add_line)
                     elif add_line.endswith('/'):
-                        ignores['dir'].append(add_line)
                         ignores['dir_full'].append(''.join(f'{wd}/{add_line}'))
                     else:
                         ignores['file'].append(add_line)
         except FileNotFoundError:
-            logger.debug(f'{__name__} File not found <{file}>')
+            logger.debug(f'{__name__} No ignore file found <{file}>')
         return ignores
 
 
