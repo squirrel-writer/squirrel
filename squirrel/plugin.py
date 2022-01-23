@@ -65,7 +65,7 @@ class Handler(PatternMatchingEventHandler):
         """Set the patterns for PatternMatchingEventHandler"""
         # 'ignore_patterns' ignore hidden files, atleast on unix filesystems
         # List used to store modified and created files
-        self.files = []
+        self.files = set()
         self.ignores = ignores
         std_ignore = ['.*', '~*', '*~']
         ignore = \
@@ -73,11 +73,10 @@ class Handler(PatternMatchingEventHandler):
         PatternMatchingEventHandler.__init__(
             self, ignore_patterns=ignore, ignore_directories=True)
 
-    def append_watch(self, file):
+    def add_watch(self, file):
         """Method to make sure only one event of each file gets processed"""
         if self.not_hidden_folder(file) and self.not_ignored_folder(file):
-            if file not in self.files:
-                self.files.append(file)
+            self.files.add(file)
 
     def not_hidden_folder(self, file):
         """Checks for hidden folders"""
@@ -95,8 +94,8 @@ class Handler(PatternMatchingEventHandler):
 
     def on_created(self, event):
         """Event is created, you can process it now"""
-        self.append_watch(event.src_path)
+        self.add_watch(event.src_path)
 
     def on_modified(self, event):
         """Event is modified, you can process it now"""
-        self.append_watch(event.src_path)
+        self.add_watch(event.src_path)
