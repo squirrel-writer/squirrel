@@ -1,6 +1,6 @@
 import importlib
 import os
-from glob import glob
+from glob import iglob
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
@@ -20,16 +20,13 @@ class Plugin():
     @staticmethod
     def get_files(path, ignores):
         """Function to find all non-ignored files i project directory"""
-        ignores_ext = tuple(i[1:] for i in ignores.get('ext'))
-        ignores_file = tuple(ignores.get('file'))
-        ignores_dir = tuple(i[:-1] for i in ignores.get('dir_full'))
+        ignore_file = ignores.get('file')
+        ignore_dir = ignores.get('dir')
         project_files = []
-        for file in glob('**/*', recursive=True):
+        for file in iglob('**/*[!f"{set(ignore_file)}"]', recursive=True):
             file_path = os.path.join(path, file)
-            if not os.path.isdir(file_path):
-                if not file_path.endswith(ignores_ext) \
-                        and file_path.rsplit('/', 1)[1] not in ignores_file \
-                        and file_path.rsplit('/', 1)[0] not in ignores_dir:
+            if os.path.isfile(file_path):
+                if file_path.rsplit('/', 1)[0] not in ignore_dir:
                     project_files.append(file_path)
         return project_files
 
@@ -38,8 +35,7 @@ class Plugin():
         """Function to read ignore file and store extensions, dir and files
          to a dictionary"""
         ignores = {
-            'ext': [],
-            'dir_full': [],
+            'dir': [],
             'file': []
             }
         try:
@@ -48,10 +44,8 @@ class Plugin():
                     add_line = line.strip()
                     if add_line.startswith('#') or add_line == '':
                         continue
-                    elif add_line.startswith('*'):
-                        ignores['ext'].append(add_line)
                     elif add_line.endswith('/'):
-                        ignores['dir_full'].append(''.join(f'{wd}/{add_line}'))
+                        ignores['dir'].append(''.join(f'{wd}/{add_line}'))
                     else:
                         ignores['file'].append(add_line)
         except FileNotFoundError:
@@ -68,8 +62,7 @@ class Handler(PatternMatchingEventHandler):
         self.files = set()
         self.ignores = ignores
         std_ignore = ['.*', '~*', '*~']
-        ignore = \
-            std_ignore + self.ignores.get('ext') + self.ignores.get('file')
+        ignore = std_ignore + self.ignores.get('file')
         PatternMatchingEventHandler.__init__(
             self, ignore_patterns=ignore, ignore_directories=True)
 
@@ -89,7 +82,7 @@ class Handler(PatternMatchingEventHandler):
 
     def not_ignored_folder(self, file):
         if f'{"".join(file.rsplit("/", 1)[:-1])}/' \
-                not in self.ignores.get('dir_full'):
+                not in self.ignores.get('dir'):
             return True
 
     def on_created(self, event):
