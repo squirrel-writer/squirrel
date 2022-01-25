@@ -30,8 +30,6 @@ def _overview(project_data, watches):
     if goal is None:
         goal = 0
 
-    print(total, goal)
-    print(type(total), type(goal))
     goal_reached = True if total > int(goal) else False
     goal_reached = False
     total_and_goal = f'{total}/{project_data["goal"]}'
