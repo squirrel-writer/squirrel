@@ -61,6 +61,9 @@ def _barchart(watches):
     def normalize(stats):
         _max = max(stats)
         _min = min(stats)
+        if _max == 0:
+            return stats
+
         for i, j in enumerate(stats):
             stats[i] = int((j - _min) / (_max - _min) * 5)
         return stats
