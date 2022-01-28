@@ -35,18 +35,30 @@ class Plugin():
          to a dictionary"""
         ignores = {
             'dir': [],
-            'file': []
+            'file': [],
+            'ignore': set(),
             }
         try:
             with open(file, 'r') as file:
+                tmp_ignore = []
                 for line in file.readlines():
                     add_line = line.strip()
                     if add_line.startswith('#') or add_line == '':
                         continue
                     elif add_line.endswith('/'):
                         ignores['dir'].append(''.join(f'{wd}/{add_line}'))
+                        tmp_ignore.append(
+                            glob(f'{add_line}*', recursive=True))
                     else:
                         ignores['file'].append(add_line)
+                        tmp_ignore.append(
+                            glob(f'**/{add_line}', recursive=True))
+
+            # Comprihension to store list of lists into a single set
+            ignore_set = set()
+            {ignore_set.update(f) for f in tmp_ignore}
+            # Comprihension to add full path to file for use in get_files()
+            {ignores['ignore'].add(path.join(wd, f)) for f in ignore_set}
         except FileNotFoundError:
             logger.debug(f'{__name__} No ignore file found <{file}>')
         return ignores
