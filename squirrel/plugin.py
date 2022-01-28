@@ -6,16 +6,41 @@ from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from .xml import get_data_from_project_file
+from .vars import logger
 
 
-class Plugin():
+class PluginManager():
+
+    def _import_required_module(module, plugin_name):
+        try:
+            globals()[module] = importlib.import_module(module)
+        except ImportError:
+            logger.error(
+                f'Could not import {module!r} required by {project_type!r}')
+            raise SystemExit(1)
 
     @staticmethod
     def load_module():
         """Loads the module declared in the xml project file.
         The module must have a get_count(files: list) -> int function"""
         project_type = get_data_from_project_file()['project-type']
-        return importlib.import_module(f'squirrel.plugins.{project_type}')
+        try:
+            plugin = importlib.import_module(
+                f'squirrel.plugins.{project_type}').Plugin
+        except (ImportError, AttributeError):
+            logger.error(
+                f'Could not load {project_type} or no Plugin class was found')
+            raise SystemExit(1)
+
+        for module in plugin.requires:
+            logger.debug(f'loading {module}')
+            _import_requried_module(module, project_type)
+
+        logger.debug(f'{project_type!r} was loaded')
+        logger.debug(f'Name: {plugin.name!r}')
+        logger.debug(f'Description: {plugin.description!r}')
+
+        return plugin
 
     @staticmethod
     def get_files(wd, ignores):
@@ -82,7 +107,7 @@ class Handler(PatternMatchingEventHandler):
 
     def __init__(self, ignores):
         """Set the patterns for PatternMatchingEventHandler"""
-        # 'ignore_patterns' ignore hidden files, atleast on unix filesystems
+        # 'ignore_patterns' ignore hidden files, at least on unix filesystems
         # List used to store modified and created files
         self.files = set()
         self.ignores = ignores
