@@ -1,6 +1,6 @@
 import importlib
-import os
-from glob import iglob
+from os import path
+from glob import iglob, glob
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
@@ -18,16 +18,15 @@ class Plugin():
         return importlib.import_module(f'squirrel.plugins.{project_type}')
 
     @staticmethod
-    def get_files(path, ignores):
+    def get_files(wd, ignores):
         """Function to find all non-ignored files i project directory"""
-        ignore_file = ignores.get('file')
-        ignore_dir = ignores.get('dir')
-        project_files = []
-        for file in iglob('**/*[!f"{set(ignore_file)}"]', recursive=True):
-            file_path = os.path.join(path, file)
-            if os.path.isfile(file_path):
-                if file_path.rsplit('/', 1)[0] not in ignore_dir:
-                    project_files.append(file_path)
+        ignore = ignores.get('ignore')
+        project_files = set()
+        for file in iglob('**/*', recursive=True):
+            if path.isfile(file):
+                file_path = path.join(wd, file)
+                project_files.add(file_path)
+        project_files.difference_update(ignore)
         return project_files
 
     @staticmethod
