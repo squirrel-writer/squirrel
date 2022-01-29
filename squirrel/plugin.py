@@ -34,31 +34,39 @@ class Plugin():
         """Function to read ignore file and store extensions, dir and files
          to a dictionary"""
         ignores = {
-            'dir': [],
+            'dir': set(),
             'file': [],
             'ignore': set(),
             }
         try:
             with open(file, 'r') as file:
                 tmp_ignore = []
+                tmp_dir = []
                 for line in file.readlines():
                     add_line = line.strip()
                     if add_line.startswith('#') or add_line == '':
                         continue
                     elif add_line.endswith('/'):
-                        ignores['dir'].append(''.join(f'{wd}/{add_line}'))
-                        tmp_ignore.append(
-                            glob(f'{add_line}*', recursive=True))
+                        # Add ignored folders and sub folders
+                        # to be passed to Handler()
+                        tmp_dir.extend(
+                            glob(f'{add_line}/**/', recursive=True,))
+                        # Add files inside ignored folder/subfolder
+                        # to be passed to get_files()
+                        tmp_ignore.extend(
+                            glob(f'{add_line}**', recursive=True))
                     else:
+                        # Add file/extentions to be passed to Handler()
                         ignores['file'].append(add_line)
-                        tmp_ignore.append(
+                        # Add all ignored files/extentions
+                        # to be passed to get_files()
+                        tmp_ignore.extend(
                             glob(f'**/{add_line}', recursive=True))
 
-            # Comprihension to store list of lists into a single set
-            ignore_set = set()
-            {ignore_set.update(f) for f in tmp_ignore}
-            # Comprihension to add full path to file for use in get_files()
-            {ignores['ignore'].add(path.join(wd, f)) for f in ignore_set}
+            # Comprehension to add full path to dir for use in Handler()
+            {ignores['dir'].add(path.join(wd, f)) for f in tmp_dir}
+            # Comprehension to add full path to file for use in get_files()
+            {ignores['ignore'].add(path.join(wd, f)) for f in tmp_ignore}
         except FileNotFoundError:
             logger.debug(f'{__name__} No ignore file found <{file}>')
         return ignores
