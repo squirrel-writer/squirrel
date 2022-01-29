@@ -99,11 +99,9 @@ def daemon(wd, logger):
     logger.debug('Watchdog initialized')
     while True:
         if event_handler.files:
-            # For loop to prompt modified files to log
+            # For loop to prompt modified files to log and project_files
             for file in event_handler.files:
                 logger.info(f'Found a modified file <{file.split("/")[-1]}>')
-                # Check if modified file exists in project_file list
-                # if file not in project_files:
                 project_files.add(file)
             # Check if file exists
             file_not_exists(project_files, logger)
