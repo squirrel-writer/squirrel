@@ -92,7 +92,7 @@ class Handler(PatternMatchingEventHandler):
         return True
 
     def not_ignored_folder(self, file):
-        if f'{"".join(file.rsplit("/", 1)[:-1])}/' \
+        if f'{path.split(file)[0]}/' \
                 not in self.ignores.get('dir'):
             return True
 
