@@ -89,7 +89,7 @@ def daemon(wd, logger):
     ignores = Plugin.import_ignores(wd, ignore_file_path, logger)
     logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
     # Loads file in project directory into project_files list
-    project_files = set(Plugin.get_files(wd, ignores))
+    project_files = Plugin.get_files(wd, ignores)
     logger.info(f'Found {len(project_files)} files in project folder')
     engine = Plugin.load_module()
     event_handler = Handler(ignores)
