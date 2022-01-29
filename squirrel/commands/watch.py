@@ -7,7 +7,7 @@ import logging
 
 from daemonize import Daemonize
 
-from squirrel.plugin import Plugin, Handler, Observer
+from squirrel.plugin import PluginManager, Handler, Observer
 from ..vars import \
     logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
     DAEMON_NAME, ignore_file_path, console
@@ -86,7 +86,7 @@ def file_not_exists(files, logger):
 def daemon(wd, logger):
     watches = wd
     # Loads '.ignore' into a variable
-    ignores = Plugin.import_ignores(wd, ignore_file_path, logger)
+    ignores = PluginManager.import_ignores(wd, ignore_file_path, logger)
     logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
     # Loads file in project directory into project_files list
     project_files = PluginManager.get_files(wd, ignores)

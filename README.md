@@ -13,7 +13,7 @@ And that folder will hold information about the project in general and the word 
 However `squirrel` is not a static program otherwise we wouldn't be able to track progress without explicit input of the user. That's why we need to have a `watch` command that will listen to any changes and update the appropriate information.
 
 ### Plugins or Project Types
-As many writing project use many file formats and programs, squirrel has a plugin architecture to have many ways to count words.
+As many writing project use many file formats and programs, squirrel has a plugin architecture to provide multiple ways to count words.
 Which plugin will used depends on the `project-type` field.
 Here are the plugins available now:
 * text
@@ -111,6 +111,9 @@ PRs are welcome :). Make sure to open an issue before submitting the
 PR so that everybody can chip in with their opinion.
 
 If your PR with be changing some dependencies, don't forget to update `Pipfile.lock` as well as the dependencies in `setup.py` with `pipenv-setup`.
+
+#### Plugins
+Adding plugins to squirrel is only a matter of creating a `Plugin` class with the appropriate information (e.g name, description etc) and a `get_count(files) -> int` function. You can find an example implementation of a plugins in `squirrel/plugins/plugin_example.py`.
 
 ### Testing
 The testing suite is very small at the moment (about 7 tests). 
