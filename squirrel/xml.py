@@ -12,7 +12,7 @@ def build_project(data: dict, path):
     files = [
         os.path.join(path, PROJECT_FILENAME),
         os.path.join(path, WATCH_FILENAME),
-        os.path.join(path, IGNORE_FILENAME)
+        IGNORE_FILENAME
     ]
     os.mkdir(path)
 
