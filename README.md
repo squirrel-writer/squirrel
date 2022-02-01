@@ -51,6 +51,7 @@ pytest
 tox
 ```
 ## Usage
+### Commands
 There 4 main verbs to interact with squirrel:
 * init
 * watch
@@ -58,21 +59,42 @@ There 4 main verbs to interact with squirrel:
 * overview
 
 You can about their options with `-h` or `--help` option. (e.g `squirrel init -h`, etc.)
-### Init
+#### Init
 ```sh
 squirrel init -n Assay --project-type text
 ```
-### Set
+#### Set
 Set can be used after init to change or set fields.
 ```sh
 squirrel set --name "English Assay" --goal 10000 -due 05/01/2022
 ```
-### Watch
+#### Watch
 Run this command to tell squirrel to watch your writing.
 ```sh
 squirrel watch start --daemon
 squirrel watch status
 squirrel watch stop
+```
+### Ignore files
+Similar to `.gitignore` files in git repos, you can ignore files in `squirrel` projects
+by adding a `.squirrelignore` file in the root of your project.
+
+Note: `.*`, `*~`, `*~` and `.<dir>` are ignored by default
+
+Example file structure:
+* .squirrel/
+* thesis.tex
+* .squirrelignore
+
+```
+# .squirrelignore file
+
+# How to ignore files and file types
+*.tmp
+README.md
+
+# How to ignore directories
+tmp_dir/
 ```
 
 ## Contributors
