@@ -55,13 +55,19 @@ class Plugin():
                         # to be passed to get_files()
                         tmp_ignore.extend(
                             glob(f'{add_line}**', recursive=True))
-                    else:
-                        # Add file/extentions to be passed to Handler()
+                    elif add_line.startswith('*'):
+                        # Add extentions to be passed to Handler()
                         ignores['file'].append(add_line)
-                        # Add all ignored files/extentions
-                        # to be passed to get_files()
+                        # Add all files with current extention
+                        # to be past to get_files()
                         tmp_ignore.extend(
                             glob(f'**/{add_line}', recursive=True))
+                    else:
+                        # Add file to be passed to Handler()
+                        ignores['file'].append(path.join(wd, add_line))
+                        # Add all ignored files to be passed to get_files()
+                        tmp_ignore.extend(
+                            glob(add_line))
 
             # Comprehension to add full path to dir for use in Handler()
             {ignores['dir'].add(path.join(wd, f)) for f in tmp_dir}
