@@ -32,15 +32,19 @@ squirrel_art = """
 """
 
 ignore_file_content = """\
-# Sample ignore file
-# '.*', '*~', '*~' and '.<dir>' is ignored by default and and doesn't need to be added
+# Add files, extensions and folders to be ignored by Squirrel
+# '.*', '*~', '*~' and '.<dir>' is ignored by default
 
-# Ignore folders: (<dir>/)
+# Ignore folders:
 # sample/
 
-# Ignore extensions: (*.tmp)
+# Ignore extensions:
+# *.tmp
 
-#Ignore files: (ignore.txt)
+# Ignore files:
+# ignore.txt
+# sample/ignore.txt
+
 """
 
 console = Console()
