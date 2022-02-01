@@ -4,6 +4,7 @@
 
 ### Specific to squirrel ###
 .squirrel/
+.squirrelignore
 
 ### vscode ###
 .vscode
