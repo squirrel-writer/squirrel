@@ -1,3 +1,5 @@
+![github_actions](https://github.com/squirrel-writer/squirrel/actions/workflows/ci.yml/badge.svg)
+
 ![squirrel-output](squirrel-overview-output.png "output of overview command")
 
 # Squirrel
