@@ -27,8 +27,9 @@ def initialized(test_directory):
 
 @pytest.fixture
 def watching(initialized):
-    watch = mp.Process(target=_main, args=(['watch', 'start', '--daemon'],))
+    watch = mp.Process(target=_main, args=(['watch', 'start', '-d'],))
     watch.start()
-    time.sleep(5)
+    watch.join()
     yield True
     _main(['watch', 'stop'])
+

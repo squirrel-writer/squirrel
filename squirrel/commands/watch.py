@@ -49,8 +49,12 @@ def status(args):
 def stop(args):
     logger.debug(args)
     pid = get_daemon_pid()
-    os.kill(pid, signal.SIGTERM)
-    console.print('Stopping squirreld watcher')
+    if pid != -1:
+        if pid_exists(pid):
+            os.kill(pid, signal.SIGTERM)
+            console.print('Stopping squirreld watcher')
+    else:
+        console.print('Could not find pid')
 
 
 def pid_exists(pid):
@@ -68,8 +72,8 @@ def get_daemon_pid() -> int:
         with open(path, 'r') as f:
             pid = f.readline()
             return int(pid)
-    except FileNotFoundError:
-        return 0
+    except (FileNotFoundError, ValueError):
+        return -1
 
 
 def file_not_exists(files, logger):
