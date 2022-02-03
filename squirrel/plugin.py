@@ -1,39 +1,109 @@
 import importlib
+import subprocess
 from os import path
 from glob import iglob, glob
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
+import yaml
 
 from .xml import get_data_from_project_file
-from .vars import logger
+from .vars import logger, PLUGIN_PATH
 
 
-class PluginManager():
+class Plugin:
+    """Hold all the metadata of the plugin as well as the module"""
 
-    @staticmethod
-    def load_module():
-        """Loads the module declared in the xml project file.
-        The module must have a get_count(files: list) -> int function"""
-        project_type = get_data_from_project_file()['project-type']
+    def __init__(self, name, description, authors, version, deps, module=None):
+        self.name = name
+        self.description = description
+        self.authors = authors
+        self.version = version
+        self.deps = deps
 
-        metadata = PluginManager.get_metadata(project_type)
-        sys, pip = PluginManager.get_deps(project_type)
-        PluginManager.verify_pip_deps(pip)
-        PluginManager.verify_sys_deps(sys)
+        self.module = module
+
+    @property
+    def pip_deps(self):
+        return self.deps.get('pip', ())
+
+    @property
+    def sys_deps(self):
+        return self.deps.get('sys', ())
+
+
+class PluginManager:
+
+    def __init__(self, project_type=''):
+        self.project_type = project_type
+        if self.project_type == '':
+            self.project_type = get_data_from_project_file()['project-type']
+
+        self.root_plugin_path = path.join(PLUGIN_PATH, self.project_type)
+        self.yaml_plugin_path = path.join(self.root_plugin_path, f'{self.project_type}.yaml')
+        self.plugin_module_path = f'squirrel.plugins.{self.project_type}.{self.project_type}'
 
         try:
-            plugin = importlib.import_module(
-                f'squirrel.plugins.{project_type}.{project_type}')
+            yaml_config = self.load_yaml_config(self.yaml_plugin_path)
+        except yaml.YAMLError as e:
+            logger.error(f'Could not load {self.project_type!r}\'s yaml config {e}')
+            raise SystemExit(1)
+
+        yaml_metadata = {
+            'name': yaml_config['name'],
+            'description': yaml_config.get('description', ''),
+            'authors': yaml_config.get('authors', ()),
+            'version': yaml_config['version'],
+            'deps': yaml_config.get('deps', {})
+        }
+        self.selected_plugin = Plugin(*yaml_metadata.values())
+
+    @staticmethod
+    def load_yaml_config(path):
+        with open(path) as f:
+            data = yaml.safe_load(f)
+            return data
+
+    def verify_pip_deps(self) -> bool:
+        for dep in self.selected_plugin.pip_deps:
+            if importlib.util.find_spec(dep) is None:
+                logger.error(f'• {dep!r} was not found in your pip packages')
+                return False
+        return True
+
+    def sys_deps_satisfied(self) -> bool:
+        for dep in self.selected_plugin.sys_deps:
+            try:
+                subprocess.run(f'command -v {dep}',
+                               shell=True, check=True, capture_output=True)
+            except subprocess.CalledProcessError:
+                logger.error(f'• {dep!r} was not found on your system')
+                return False
+        return True
+
+    def load(self):
+        """Loads the module declared in the xml project file.
+        The module must have a get_count(files: list) -> int function"""
+        pip_satisfied = self.verify_pip_deps()
+        if not pip_satisfied:
+            logger.error(f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}')
+            raise SystemExit(1)
+
+        sys_satisfied = self.sys_deps_satisfied()
+        if not pip_satisfied:
+            logger.error(f'Could not satisfy sys requirements of {self.selected_plugin.name!r}')
+            raise SystemExit(1)
+
+        try:
+            plugin = importlib.import_module(self.plugin_module_path)
         except (ImportError, AttributeError):
             logger.error(
                 f'Could not load {project_type}')
             raise SystemExit(1)
 
-        logger.debug(f'{project_type!r} was loaded')
-        logger.debug(f'Name: {plugin.name!r}')
-        logger.debug(f'Description: {plugin.description!r}')
+        logger.debug(f'{self.project_type!r} was loaded')
 
+        self.selected_plugin.module = plugin
         return plugin
 
     @staticmethod
@@ -56,7 +126,7 @@ class PluginManager():
             'dir': set(),
             'file': [],
             'ignore': set(),
-            }
+        }
         try:
             with open(file, 'r') as file:
                 tmp_ignore = []

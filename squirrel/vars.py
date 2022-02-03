@@ -17,6 +17,8 @@ watch_daemon_pidfile_path = os.path.join(DIRECTORY_NAME, WATCH_DAEMON_PIDFILE)
 watch_daemon_logfile_path = os.path.join(DIRECTORY_NAME, DAEMON_LOGFILE)
 ignore_file_path = IGNORE_FILENAME
 
+PLUGIN_PATH = 'squirrel/plugins/'
+
 # TODO: find artist and credit him
 squirrel_art = """
                               _
