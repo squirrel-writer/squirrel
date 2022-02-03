@@ -1,0 +1,8 @@
+name: texcount
+authors:
+  - squirrel-writer,<m.drissi@protonmail.com>
+description: Count latex files with `texcount`
+version: 0.0.1
+deps:
+  sys:
+    - texcount

@@ -1,0 +1,10 @@
+name: example
+authors:
+  - squirrel,<mail@mail.com>
+description: description of the example plugin
+version: 0.0.0
+deps:
+  sys:
+    - command
+  pip:
+    - python_package

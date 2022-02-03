@@ -11,30 +11,24 @@ from .vars import logger
 
 class PluginManager():
 
-    def _import_required_module(module, plugin_name):
-        try:
-            globals()[module] = importlib.import_module(module)
-        except ImportError:
-            logger.error(
-                f'Could not import {module!r} required by {project_type!r}')
-            raise SystemExit(1)
-
     @staticmethod
     def load_module():
         """Loads the module declared in the xml project file.
         The module must have a get_count(files: list) -> int function"""
         project_type = get_data_from_project_file()['project-type']
+
+        metadata = PluginManager.get_metadata(project_type)
+        sys, pip = PluginManager.get_deps(project_type)
+        PluginManager.verify_pip_deps(pip)
+        PluginManager.verify_sys_deps(sys)
+
         try:
             plugin = importlib.import_module(
-                f'squirrel.plugins.{project_type}').Plugin
+                f'squirrel.plugins.{project_type}.{project_type}')
         except (ImportError, AttributeError):
             logger.error(
-                f'Could not load {project_type} or no Plugin class was found')
+                f'Could not load {project_type}')
             raise SystemExit(1)
-
-        for module in plugin.requires:
-            logger.debug(f'loading {module}')
-            _import_requried_module(module, project_type)
 
         logger.debug(f'{project_type!r} was loaded')
         logger.debug(f'Name: {plugin.name!r}')
