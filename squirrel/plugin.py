@@ -145,9 +145,9 @@ class PluginManager:
                         tmp_ignore.extend(
                             glob(f'{add_line}**', recursive=True))
                     elif add_line.startswith('*'):
-                        # Add extentions to be passed to Handler()
+                        # Add extensions to be passed to Handler()
                         ignores['file'].append(add_line)
-                        # Add all files with current extention
+                        # Add all files with current extension
                         # to be past to get_files()
                         tmp_ignore.extend(
                             glob(f'**/{add_line}', recursive=True))
