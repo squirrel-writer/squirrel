@@ -40,13 +40,15 @@ class PluginManager:
             self.project_type = get_data_from_project_file()['project-type']
 
         self.root_plugin_path = path.join(PLUGIN_PATH, self.project_type)
-        self.yaml_plugin_path = path.join(self.root_plugin_path, f'{self.project_type}.yaml')
+        self.yaml_plugin_path = path.join(
+            self.root_plugin_path, f'{self.project_type}.yaml')
         self.plugin_module_path = f'squirrel.plugins.{self.project_type}.{self.project_type}'
 
         try:
             yaml_config = self.load_yaml_config(self.yaml_plugin_path)
         except yaml.YAMLError as e:
-            logger.error(f'Could not load {self.project_type!r}\'s yaml config {e}')
+            logger.error(
+                f'Could not load {self.project_type!r}\'s yaml config {e}')
             raise SystemExit(1)
 
         yaml_metadata = {
@@ -86,12 +88,14 @@ class PluginManager:
         The module must have a get_count(files: list) -> int function"""
         pip_satisfied = self.verify_pip_deps()
         if not pip_satisfied:
-            logger.error(f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}')
+            logger.error(
+                f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}')
             raise SystemExit(1)
 
         sys_satisfied = self.sys_deps_satisfied()
         if not pip_satisfied:
-            logger.error(f'Could not satisfy sys requirements of {self.selected_plugin.name!r}')
+            logger.error(
+                f'Could not satisfy sys requirements of {self.selected_plugin.name!r}')
             raise SystemExit(1)
 
         try:
