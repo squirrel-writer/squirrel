@@ -150,7 +150,7 @@ Look at this example for [more](https://github.com/squirrel-writer/squirrel/blob
 
 If a plugin needs some thrid-party dependencies (`system` or `pip`), they must be declared in the `yaml` config file of the plugin.
 
-`pip` or `system` dependencies can be declared this way inside a the config file:
+`pip` or `system` dependencies can be declared this way inside the config file:
 ```yaml
 deps:
   sys:
