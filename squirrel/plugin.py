@@ -86,14 +86,12 @@ class PluginManager:
     def load(self):
         """Loads the module declared in the xml project file.
         The module must have a get_count(files: list) -> int function"""
-        pip_satisfied = self.verify_pip_deps()
-        if not pip_satisfied:
+        if self.verify_pip_deps():
             logger.error(
                 f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}')
             raise SystemExit(1)
 
-        sys_satisfied = self.sys_deps_satisfied()
-        if not pip_satisfied:
+        if self.sys_deps_satisfied():
             logger.error(
                 f'Could not satisfy sys requirements of {self.selected_plugin.name!r}')
             raise SystemExit(1)
