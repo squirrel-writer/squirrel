@@ -41,7 +41,7 @@ def _overview(project_data, watches):
         f'[italic]{project_data["description"]}[/]',
         f'[hot_pink3]Today:[/] {today}[italic] words[/]',
         f'[hot_pink3]Goal:[/] {total_and_goal}',
-        f'[hot_pink3]Due Data:[/] {project_data["due-date"]}',
+        f'[hot_pink3]Due Date:[/] {project_data["due-date"]}',
         f'[hot_pink3]Project Type:[/] {project_data["project-type"]}',
     ]
 
