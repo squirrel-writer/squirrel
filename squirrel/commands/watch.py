@@ -85,8 +85,8 @@ def get_daemon_pid() -> int:
         return -1
 
 
-def file_not_exists(files, logger):
-    """Check if file exists and remove it from list of watched file if not"""
+def purge_deleted_files(files, logger):
+    """Remove deleted files from a list of files"""
     remove_files = set()
     for file in files:
         if not os.path.exists(file):
@@ -120,9 +120,11 @@ def daemon(wd, logger):
             # For loop to prompt modified files to log and project_files
             for file in event_handler.files:
                 logger.info(f'Found a modified file <{file.split("/")[-1]}>')
-                project_files.add(file)
-            # Check if file exists
-            file_not_exists(project_files, logger)
+                if os.path.exists(file):
+                    project_files.add(file)
+
+            purge_deleted_files(project_files, logger)
+
             # Counts files in project folder
             start = time.time()
             total = engine.get_count(project_files)
