@@ -27,11 +27,14 @@ def watch(args):
                       chdir=wd,
                       keep_fds=keep_fds)
         d.start()
+        return True
     else:
         try:
             daemon(wd, logger)
         except KeyboardInterrupt:
-            pass
+            return False
+
+    return True
 
 
 def status(args):
@@ -40,10 +43,13 @@ def status(args):
     if pid != -1:
         if pid_exists(pid):
             console.print('[green]●[/] squirreld watcher is running')
+            return True
         else:
             console.print('[red]●[/] squirreld watcher is not running')
+            return False
     else:
         console.print('[red]●[/] squirreld watcher is not running')
+        return False
 
 
 def stop(args):
@@ -53,8 +59,10 @@ def stop(args):
         if pid_exists(pid):
             os.kill(pid, signal.SIGTERM)
             console.print('Stopping squirreld watcher')
-    else:
-        console.print('Could not find pid')
+            return True
+
+    console.print('Could not find pid')
+    return False
 
 
 def pid_exists(pid):
@@ -67,6 +75,7 @@ def pid_exists(pid):
 
 
 def get_daemon_pid() -> int:
+    """Returns the pid of the running daemon or -1 if not found"""
     path = watch_daemon_pidfile_path
     try:
         with open(path, 'r') as f:
@@ -90,13 +99,17 @@ def file_not_exists(files, logger):
 def daemon(wd, logger):
     watches = wd
     plugin_manager = PluginManager(logger=logger)
+
     # Loads '.ignore' into a variable
     ignores = plugin_manager.import_ignores(wd, ignore_file_path, logger)
     logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
+
     # Loads file in project directory into project_files list
     project_files = plugin_manager.get_files(wd, ignores)
     logger.info(f'Found {len(project_files)} files in project folder')
+
     engine = plugin_manager.load()
+
     event_handler = Handler(ignores)
     observer = Observer(timeout=60)
     observer.schedule(event_handler, watches, recursive=True)
