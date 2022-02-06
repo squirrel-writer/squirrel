@@ -34,7 +34,7 @@ class Plugin:
 
 class PluginManager:
 
-    def __init__(self, project_type=''):
+    def __init__(self, logger=logger, project_type=''):
         self.project_type = project_type
         if self.project_type == '':
             self.project_type = get_data_from_project_file()['project-type']
@@ -60,6 +60,8 @@ class PluginManager:
         }
         self.selected_plugin = Plugin(*yaml_metadata.values())
 
+        self.logger = logger
+
     @staticmethod
     def load_yaml_config(path):
         with open(path) as f:
@@ -69,7 +71,7 @@ class PluginManager:
     def verify_pip_deps(self) -> bool:
         for dep in self.selected_plugin.pip_deps:
             if importlib.util.find_spec(dep) is None:
-                logger.error(f'• {dep!r} was not found in your pip packages')
+                self.logger.error(f'• {dep!r} was not found in your pip packages')
                 return False
         return True
 
@@ -79,31 +81,31 @@ class PluginManager:
                 subprocess.run(f'command -v {dep}',
                                shell=True, check=True, capture_output=True)
             except subprocess.CalledProcessError:
-                logger.error(f'• {dep!r} was not found on your system')
+                self.logger.error(f'• {dep!r} was not found on your system')
                 return False
         return True
 
     def load(self):
         """Loads the module declared in the xml project file.
         The module must have a get_count(files: list) -> int function"""
-        if self.verify_pip_deps():
-            logger.error(
+        if not self.verify_pip_deps():
+            self.logger.error(
                 f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}')
             raise SystemExit(1)
 
-        if self.sys_deps_satisfied():
-            logger.error(
+        if not self.sys_deps_satisfied():
+            self.logger.error(
                 f'Could not satisfy sys requirements of {self.selected_plugin.name!r}')
             raise SystemExit(1)
 
         try:
             plugin = importlib.import_module(self.plugin_module_path)
         except (ImportError, AttributeError):
-            logger.error(
+            self.logger.error(
                 f'Could not load {project_type}')
             raise SystemExit(1)
 
-        logger.debug(f'{self.project_type!r} was loaded')
+        self.logger.debug(f'{self.project_type!r} was loaded')
 
         self.selected_plugin.module = plugin
         return plugin

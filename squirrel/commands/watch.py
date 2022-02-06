@@ -89,7 +89,7 @@ def file_not_exists(files, logger):
 
 def daemon(wd, logger):
     watches = wd
-    plugin_manager = PluginManager()
+    plugin_manager = PluginManager(logger=logger)
     # Loads '.ignore' into a variable
     ignores = plugin_manager.import_ignores(wd, ignore_file_path, logger)
     logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
