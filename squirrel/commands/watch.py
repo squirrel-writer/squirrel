@@ -37,7 +37,7 @@ def watch(args):
 def status(args):
     logger.debug(args)
     pid = get_daemon_pid()
-    if pid != 0:
+    if pid != -1:
         if pid_exists(pid):
             console.print('🟢 squirreld watcher is running')
         else:
