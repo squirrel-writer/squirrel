@@ -15,13 +15,20 @@ def init(args):
     wd = os.getcwd()
     path = os.path.join(wd, DIRECTORY_NAME)
 
+    initialized = False
     if not os.path.isdir(path):
         logger.debug('Initializing new project')
-        build_project(dict_args, path)
+        initialized = build_project(dict_args, path)
     else:
         logger.debug('Previous project found')
         if _reset_project_folder(path, yes=args.y):
-            build_project(dict_args, path)
+            initialized = build_project(dict_args, path)
+
+    if initialized:
+        console.print('Project Initialized!')
+        return True
+    console.print('Project initialization failed')
+    return False
 
 
 def _delete_project_folder(path, warning_msg=None, yes=False):

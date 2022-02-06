@@ -14,8 +14,11 @@ def overview(args):
 
     if args.graph:
         _barchart(watches)
+        return True
     else:
         _overview(data, watches)
+        return True
+    return False
 
 
 def _overview(project_data, watches):
@@ -98,3 +101,4 @@ def _barchart(watches):
 
     console.print(
         Columns([Panel(output), format(stats)], expand=False, padding=5))
+
