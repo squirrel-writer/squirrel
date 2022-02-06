@@ -23,6 +23,7 @@ Here are the plugins available now:
 
 ## Requirement & Installation
 **Tested Python versions:**
+* python 3.8
 * python 3.9
 * python 3.10
 
