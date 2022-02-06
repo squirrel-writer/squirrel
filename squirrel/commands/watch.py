@@ -38,6 +38,7 @@ def watch(args):
 
 
 def status(args):
+    """Returns the status of squirreld watcher"""
     logger.debug(args)
     pid = get_daemon_pid()
     if pid != -1:
@@ -53,6 +54,7 @@ def status(args):
 
 
 def stop(args):
+    """Kills the squirrel daemon watcher"""
     logger.debug(args)
     pid = get_daemon_pid()
     if pid != -1:
@@ -140,7 +142,7 @@ def update_count(engine, files, logger=logger):
     total_time = round(end - start, 3)
 
     logger.info(
-        f'{engine.__name__}: get_count({len(files)} files)'\
+        f'{engine.__name__}: get_count({len(files)} files)'
         f' -> {total} took {total_time}'
     )
 

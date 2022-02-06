@@ -24,10 +24,11 @@ def build_project(data: dict, path):
     build_watch_file(files[1])
     build_ignore_file(files[2])
 
+
 def indent(tree, space=" ", level=0):
-    if isinstance(tree,ET.ElementTree):
+    if isinstance(tree, ET.ElementTree):
         tree = tree.getroot()
-    
+
     # From 3.9 - reduce memory consumption by resuing indentation strings
     indentations = ["\n" + level * space]
 

@@ -71,7 +71,8 @@ class PluginManager:
     def verify_pip_deps(self) -> bool:
         for dep in self.selected_plugin.pip_deps:
             if importlib.util.find_spec(dep) is None:
-                self.logger.error(f'• {dep!r} was not found in your pip packages')
+                self.logger.error(
+                    f'• {dep!r} was not found in your pip packages')
                 return False
         return True
 
