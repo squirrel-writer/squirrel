@@ -34,7 +34,6 @@ def _overview(project_data, watches):
         goal = 0
 
     goal_reached = True if total > int(goal) else False
-    goal_reached = False
     total_and_goal = f'{total}/{project_data["goal"]}'
     if goal_reached:
         total_and_goal = f'[green]{total_and_goal}[/]'
