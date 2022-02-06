@@ -39,11 +39,11 @@ def status(args):
     pid = get_daemon_pid()
     if pid != -1:
         if pid_exists(pid):
-            console.print('🟢 squirreld watcher is running')
+            console.print('[green]●[/] squirreld watcher is running')
         else:
-            console.print('🔴 squirreld watcher is not running')
+            console.print('[red]●[/] squirreld watcher is not running')
     else:
-        console.print('🔴 squirreld watcher is not running')
+        console.print('[red]●[/] squirreld watcher is not running')
 
 
 def stop(args):
