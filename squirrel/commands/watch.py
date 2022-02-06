@@ -125,20 +125,31 @@ def daemon(wd, logger):
 
             purge_deleted_files(project_files, logger)
 
-            # Counts files in project folder
-            start = time.time()
-            total = engine.get_count(project_files)
-            end = time.time()
-            total_time = round(end - start, 3)
-            logger.info(
-                f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {total_time}')
-            # Adds new entry to watch-data.xml
-            added = add_watch_entry(total, datetime.now())
-            if added:
-                logger.debug('A new watch entry was added')
+            update_count(engine, project_files, logger=logger)
+
             # Clears list before a new run
             event_handler.files.clear()
             time.sleep(60*3)
+
+
+def update_count(engine, files, logger=logger):
+    # Counts files in project folder
+    start = time.time()
+    total = engine.get_count(files)
+    end = time.time()
+    total_time = round(end - start, 3)
+
+    logger.info(
+        f'{engine.__name__}: get_count({len(files)} files)'\
+        f' -> {total} took {total_time}'
+    )
+
+    # Adds new entry to watch-data.xml
+    added = add_watch_entry(total, datetime.now())
+    if added:
+        logger.debug('A new watch entry was added')
+        return True
+    return False
 
 
 def setup_daemon_logger():
