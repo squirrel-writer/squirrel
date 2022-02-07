@@ -124,7 +124,7 @@ tmp_dir/
 ### How can you help
 If you're looking to help `squirrel` become better, we're always looking
 for people to test, report any bugs, improve documentation,
-and submit any fixes or features. 
+and submit any fixes or features.
 Any contribution (even documentation) goes a long way.
 
 ### Pull Requests
@@ -186,8 +186,7 @@ deps:
 ```
 
 ### Testing
-The testing suite is very small at the moment (about 7 tests). 
+The testing suite is very small at the moment (about 7 tests).
 We need help in making it robust and exhaustive. Any contribution on this regard is highly appreciated.
 
 `squirrel` is still in an experimental stage. Bugs are probably present, so any testing and bug reporting is welcome.
-

@@ -18,6 +18,7 @@ autopep8 = "*"
 check-manifest = "*"
 twine = "*"
 tox = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.9"

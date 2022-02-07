@@ -32,4 +32,3 @@ def watching(initialized):
     watch.join()
     yield True
     _main(['watch', 'stop'])
-

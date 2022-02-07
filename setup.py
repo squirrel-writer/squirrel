@@ -107,5 +107,5 @@ setup(
         "Development Status :: 2 - Pre-Alpha",
     ],
     python_requires=">=3.8",
-    entry_points={"console_scripts": ["squirrel=squirrel.squirrel:_main",],},
+    entry_points={"console_scripts": ["squirrel=squirrel.squirrel:_main", ], },
 )
