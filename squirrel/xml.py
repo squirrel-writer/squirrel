@@ -24,21 +24,41 @@ def build_project(data: dict, path):
     build_watch_file(files[1])
     build_ignore_file(files[2])
 
-def indent(tree, space=" ", level=0):
-    if isinstance(tree,ET.ElementTree):
+# Insert the XML document with newlines and indentation space after elements
+# 'tree' is the ElementTree that's being modified
+# 'space' adds whitespace for each indentation level, two characters by default
+# 'level' controls where the indentation starts. For a subtree nested further down, set value >0
+def indent(tree, space="  ", level=0):
+    if isinstance(tree, ET.ElementTree):
         tree = tree.getroot()
-    
-    # From 3.9 - reduce memory consumption by resuing indentation strings
+
+    # Reduce memory consumption by resuing indentation strings
     indentations = ["\n" + level * space]
 
-    child_level = level + 1
-    try:
-        child_indentation = indentations[child_level]
-    except IndexError:
-        child_indentation = indentations[level] + space
-        indentations.append(child_indentation)
+    def indent_child(element, level):
+        # New indent level
+        child_level = level + 1
+        try:
+            child_indentation = indentations[child_level]
+        except IndexError:
+            child_indentation = indentations[level] + space
+            indentations.append(child_indentation)
 
+        if not element.text or not element.text.strip():
+            element.text = child_indentation
 
+        for child in element:
+            if len(child):
+                indent_child(child, child_level)
+            if not child.tail or not child.tail.strip():
+                child.tail = child_indentation
+
+        # Dedent and then overwite preivous indent
+        if not child.tail.strip():
+            child.tail = indentations[level]
+
+    indent_child(tree, 0)
+    
 def build_project_file(data: dict, file):
     squirrel = ET.Element(
         'squirrel', name=f"{data.get('name') if data.get('name') is not None else ''}")
