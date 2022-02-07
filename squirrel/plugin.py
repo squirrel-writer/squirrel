@@ -103,7 +103,7 @@ class PluginManager:
             plugin = importlib.import_module(self.plugin_module_path)
         except (ImportError, AttributeError):
             self.logger.error(
-                f'Could not load {project_type}')
+                f'Could not load {self.project_type}')
             raise SystemExit(1)
 
         self.logger.debug(f'{self.project_type!r} was loaded')

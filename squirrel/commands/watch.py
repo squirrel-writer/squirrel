@@ -131,7 +131,7 @@ def daemon(wd, logger):
 
             # Clears list before a new run
             event_handler.files.clear()
-            time.sleep(60*3)
+            time.sleep(60 * 3)
 
 
 def update_count(engine, files, logger=logger):

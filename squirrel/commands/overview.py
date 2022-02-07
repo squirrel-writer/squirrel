@@ -128,7 +128,7 @@ def _barchart(watches):
         lines = max(stats)
         output = ''
         line = ''
-        for i in reversed(range(1, lines+1)):
+        for i in reversed(range(1, lines + 1)):
             for x, y in enumerate(stats):
                 if y == i:
                     stats[x] -= 1
