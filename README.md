@@ -1,4 +1,4 @@
-![github_actions](https://github.com/squirrel-writer/squirrel/actions/workflows/ci.yml/badge.svg)
+![github_actions](https://github.com/squirrel-writer/squirrel/actions/workflows/ci.yml/badge.svg) ![Python - PEP8](https://github.com/squirrel-writer/squirrel/actions/workflows/pep8.yml/badge.svg)
 
 ![squirrel-output](squirrel-overview-output.png "output of overview command")
 
