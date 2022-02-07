@@ -17,7 +17,8 @@ def get_count(files) -> int:
         text=True,
     )
 
-    total = list(filter(lambda x: x.isnumeric(), output.stdout.split('\n')))
+    total = list(filter(lambda x: x.isnumeric(),
+                 output.stdout.split('\n')))
     if len(total) > 0:
         return int(total[0])
     logger.debug('Did not find value after parsing `texcount` command')

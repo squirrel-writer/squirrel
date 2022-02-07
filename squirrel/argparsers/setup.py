@@ -28,11 +28,12 @@ def _setup_main_parser():
         '-v',
         '--version',
         action='version',
-        version='%(prog)s 0.1',
+        version='%(prog)s 0.0.3',
         help='Show the version of the program',
     )
 
     main_parser.add_argument(
+        '-d',
         '--debug',
         action='store_true',
         help='Activate debug mode'

@@ -1,6 +1,6 @@
 from rich.panel import Panel
 from rich.columns import Columns
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 
 from ..vars import console, logger
 from ..vars import squirrel_art
@@ -14,8 +14,11 @@ def overview(args):
 
     if args.graph:
         _barchart(watches)
+        return True
     else:
         _overview(data, watches)
+        return True
+    return False
 
 
 def _overview(project_data, watches):
@@ -26,26 +29,79 @@ def _overview(project_data, watches):
         total = int(total)
         today = total - int(prev)
 
-    goal = project_data.get('goal', None)
-    if goal is None:
-        goal = 0
+    formatter = Formatter(
+        project_data.get('name', None),
+        project_data.get('description', None),
+        project_data.get('goal', None),
+        project_data.get('due-date', None),
+        project_data.get('project_type', None),
+        total,
+        today
+    )
+    console.print(Columns([squirrel_art, Panel(formatter.overview)]))
 
-    goal_reached = True if total > int(goal) else False
-    goal_reached = False
-    total_and_goal = f'{total}/{project_data["goal"]}'
-    if goal_reached:
-        total_and_goal = f'[green]{total_and_goal}[/]'
 
-    texts = [
-        f'[cyan bold underline]{project_data["name"]}[/]',
-        f'[italic]{project_data["description"]}[/]',
-        f'[hot_pink3]Today:[/] {today}[italic] words[/]',
-        f'[hot_pink3]Goal:[/] {total_and_goal}',
-        f'[hot_pink3]Due Data:[/] {project_data["due-date"]}',
-        f'[hot_pink3]Project Type:[/] {project_data["project-type"]}',
-    ]
+class Formatter:
+    def __init__(self, name, description, goal, due_date, project_type, total, today):
+        self._name = name
+        self._description = description
+        self._goal = goal
+        self._due_date = due_date
+        self._project_type = project_type
+        self.total = total
+        self._today = today
 
-    console.print(Columns([squirrel_art, Panel('\n'.join(texts))]))
+    @property
+    def name(self):
+        return f'[cyan bold underline]{self._name}[/]'
+
+    @property
+    def description(self):
+        return f'[italic]{self._description}[/]'
+
+    @property
+    def today(self):
+        return f'[hot_pink3]Today:[/] {self._today}[italic] words[/]'
+
+    @property
+    def goal(self):
+        if self._goal is None:
+            goal = 0
+        goal_reached = True if self.total > int(goal) else False
+
+        total_and_goal = f'{self.total}/{self._goal}'
+        if goal_reached:
+            total_and_goal = f'[green]{total_and_goal}[/]'
+
+        return f'[hot_pink3]Goal:[/] {total_and_goal}'
+
+    @property
+    def due_date(self):
+        due_date_formatted = self._due_date
+        if self._due_date is not None:
+            dd = datetime.strptime(self._due_date, '%d/%m/%Y')
+            if datetime.now() <= dd:
+                delta = dd - datetime.now()
+                due_date_formatted = f'{self._due_date} [italic blue]({delta.days} days left)[/]'
+            else:
+                due_date_formatted = f'[blinking red]{self._due_date}[/]'
+
+        return f'[hot_pink3]Due Date:[/] {due_date_formatted}'
+
+    @property
+    def project_type(self):
+        return f'[hot_pink3]Project Type:[/] {self._project_type}'
+
+    @property
+    def overview(self):
+        return '\n'.join([
+            self.name,
+            self.description,
+            self.today,
+            self.goal,
+            self.due_date,
+            self.project_type
+        ])
 
 
 def _barchart(watches):
@@ -72,7 +128,7 @@ def _barchart(watches):
         lines = max(stats)
         output = ''
         line = ''
-        for i in reversed(range(1, lines+1)):
+        for i in reversed(range(1, lines + 1)):
             for x, y in enumerate(stats):
                 if y == i:
                     stats[x] -= 1

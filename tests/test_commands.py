@@ -44,7 +44,7 @@ def test_init_file_creation(test_directory):
         pytest.fail('file projects were not created')
 
     # remove any whitespace to be able to create a
-    # test string without not worrying about indentation and stuff
+    # test string without worrying about indentation and stuff
     project = ''.join(project.split())
     watch = ''.join(watch.split())
 

@@ -5,7 +5,6 @@ from rich.logging import RichHandler
 from .argparsers import setup_parsers
 
 
-# TODO: make it return a return code
 def _main(args=None):
     parser = setup_parsers()
     args = parser.parse_args(args)
@@ -15,4 +14,4 @@ def _main(args=None):
                         datefmt="[%X]",
                         handlers=[RichHandler()])
 
-    args.func(args)
+    return not args.func(args)

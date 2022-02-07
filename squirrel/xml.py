@@ -20,9 +20,33 @@ def build_project(data: dict, path):
         with open(file, 'w') as _:
             pass
 
-    build_project_file(data, files[0])
-    build_watch_file(files[1])
-    build_ignore_file(files[2])
+    if not build_project_file(data, files[0]):
+        logger.error(f'Could not build <{files[0]}>')
+        return False
+
+    if not build_watch_file(files[1]):
+        logger.error(f'Could not build <{files[1]}>')
+        return False
+
+    if not build_ignore_file(files[2]):
+        logger.error(f'Could not build <{files[2]}>')
+        return False
+    return True
+
+
+def indent(tree, space=" ", level=0):
+    if isinstance(tree, ET.ElementTree):
+        tree = tree.getroot()
+
+    # From 3.9 - reduce memory consumption by resuing indentation strings
+    indentations = ["\n" + level * space]
+
+    child_level = level + 1
+    try:
+        child_indentation = indentations[child_level]
+    except IndexError:
+        child_indentation = indentations[level] + space
+        indentations.append(child_indentation)
 
 # Insert the XML document with newlines and indentation space after elements
 # 'tree' is the ElementTree that's being modified
@@ -84,6 +108,7 @@ def build_project_file(data: dict, file):
     tree = ET.ElementTree(squirrel)
     indent(tree)
     tree.write(file, encoding='utf-8', xml_declaration=True)
+    return True
 
 
 def build_watch_file(file):
@@ -94,11 +119,14 @@ def build_watch_file(file):
     tree = ET.ElementTree(squirrel)
     indent(tree)
     tree.write(file, encoding='utf-8', xml_declaration=True)
+    return True
 
 
 def build_ignore_file(file):
     with open(file, 'w') as f:
         f.write(ignore_file_content)
+        return True
+    return False
 
 
 def update_project_file(data: dict):
@@ -106,6 +134,7 @@ def update_project_file(data: dict):
     tree = parse(path)
     squirrel = tree.getroot()
 
+    valid = True
     if (name := data.get('name')) is not None:
         squirrel.set('name', name)
 
@@ -113,6 +142,7 @@ def update_project_file(data: dict):
         try:
             squirrel.find('description').text = desc
         except AttributeError:
+            valid = False
             logger.error('[bold red blink]description[/] element was not found in the xml file'
                          ' try initializing the project again', extra={'markup': True})
 
@@ -120,6 +150,7 @@ def update_project_file(data: dict):
         try:
             squirrel.find('goal').text = str(goal)
         except AttributeError:
+            valid = False
             logger.error('goal element was not found in the xml file'
                          ' try initializing the project again')
 
@@ -127,6 +158,7 @@ def update_project_file(data: dict):
         try:
             squirrel.find('due-date').text = due.strftime('%d/%m/%Y')
         except AttributeError:
+            valid = False
             logger.error('due-date element was not found in the xml file'
                          'try init project again')
 
@@ -134,10 +166,12 @@ def update_project_file(data: dict):
         try:
             squirrel.find('project-type').text = project_type
         except AttributeError:
+            valid = False
             logger.error('[bold red blink]project-type[/] element was not found in the xml file'
                          ' try initializing the project again', extra={'markup': True})
 
     tree.write(path, encoding='utf-8', xml_declaration=True)
+    return valid
 
 
 def get_data_from_project_file(basedir=''):

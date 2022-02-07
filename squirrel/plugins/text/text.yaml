@@ -1,0 +1,8 @@
+name: text
+authors:
+  - squirrel-writer,<m.drissi@protonmail.com>
+description: Counting files using the `wc` command
+version: 0.0.1
+deps:
+  sys:
+    - wc

@@ -7,7 +7,7 @@ import logging
 
 from daemonize import Daemonize
 
-from squirrel.plugin import Plugin, Handler, Observer
+from squirrel.plugin import PluginManager, Handler, Observer
 from ..vars import \
     logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
     DAEMON_NAME, ignore_file_path, console
@@ -27,30 +27,44 @@ def watch(args):
                       chdir=wd,
                       keep_fds=keep_fds)
         d.start()
+        return True
     else:
         try:
             daemon(wd, logger)
         except KeyboardInterrupt:
-            pass
+            return False
+
+    return True
 
 
 def status(args):
+    """Returns the status of squirreld watcher"""
     logger.debug(args)
     pid = get_daemon_pid()
-    if pid != 0:
+    if pid != -1:
         if pid_exists(pid):
-            console.print('🟢 squirreld watcher is running')
+            console.print('[green]●[/] squirreld watcher is running')
+            return True
         else:
-            console.print('🔴 squirreld watcher is not running')
+            console.print('[red]●[/] squirreld watcher is not running')
+            return False
     else:
-        console.print('🔴 squirreld watcher is not running')
+        console.print('[red]●[/] squirreld watcher is not running')
+        return False
 
 
 def stop(args):
+    """Kills the squirrel daemon watcher"""
     logger.debug(args)
     pid = get_daemon_pid()
-    os.kill(pid, signal.SIGTERM)
-    console.print('Stopping squirreld watcher')
+    if pid != -1:
+        if pid_exists(pid):
+            os.kill(pid, signal.SIGTERM)
+            console.print('Stopping squirreld watcher')
+            return True
+
+    console.print('Could not find pid')
+    return False
 
 
 def pid_exists(pid):
@@ -63,17 +77,18 @@ def pid_exists(pid):
 
 
 def get_daemon_pid() -> int:
+    """Returns the pid of the running daemon or -1 if not found"""
     path = watch_daemon_pidfile_path
     try:
         with open(path, 'r') as f:
             pid = f.readline()
             return int(pid)
-    except FileNotFoundError:
-        return 0
+    except (FileNotFoundError, ValueError):
+        return -1
 
 
-def file_not_exists(files, logger):
-    """Check if file exists and remove it from list of watched file if not"""
+def purge_deleted_files(files, logger):
+    """Remove deleted files from a list of files"""
     remove_files = set()
     for file in files:
         if not os.path.exists(file):
@@ -85,13 +100,18 @@ def file_not_exists(files, logger):
 
 def daemon(wd, logger):
     watches = wd
+    plugin_manager = PluginManager(logger=logger)
+
     # Loads '.ignore' into a variable
-    ignores = Plugin.import_ignores(wd, ignore_file_path, logger)
+    ignores = plugin_manager.import_ignores(wd, ignore_file_path, logger)
     logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
+
     # Loads file in project directory into project_files list
-    project_files = Plugin.get_files(wd, ignores)
+    project_files = plugin_manager.get_files(wd, ignores)
     logger.info(f'Found {len(project_files)} files in project folder')
-    engine = Plugin.load_module()
+
+    engine = plugin_manager.load()
+
     event_handler = Handler(ignores)
     observer = Observer(timeout=60)
     observer.schedule(event_handler, watches, recursive=True)
@@ -102,23 +122,36 @@ def daemon(wd, logger):
             # For loop to prompt modified files to log and project_files
             for file in event_handler.files:
                 logger.info(f'Found a modified file <{file.split("/")[-1]}>')
-                project_files.add(file)
-            # Check if file exists
-            file_not_exists(project_files, logger)
-            # Counts files in project folder
-            start = time.time()
-            total = engine.get_count(project_files)
-            end = time.time()
-            total_time = round(end - start, 3)
-            logger.info(
-                f'{engine.__name__}: get_count({len(project_files)} files) -> {total} took {total_time}')
-            # Adds new entry to watch-data.xml
-            added = add_watch_entry(total, datetime.now())
-            if added:
-                logger.debug('A new watch entry was added')
+                if os.path.exists(file):
+                    project_files.add(file)
+
+            purge_deleted_files(project_files, logger)
+
+            update_count(engine, project_files, logger=logger)
+
             # Clears list before a new run
             event_handler.files.clear()
-            time.sleep(60*3)
+            time.sleep(60 * 3)
+
+
+def update_count(engine, files, logger=logger):
+    # Counts files in project folder
+    start = time.time()
+    total = engine.get_count(files)
+    end = time.time()
+    total_time = round(end - start, 3)
+
+    logger.info(
+        f'{engine.__name__}: get_count({len(files)} files)'
+        f' -> {total} took {total_time}'
+    )
+
+    # Adds new entry to watch-data.xml
+    added = add_watch_entry(total, datetime.now())
+    if added:
+        logger.debug('A new watch entry was added')
+        return True
+    return False
 
 
 def setup_daemon_logger():
