@@ -5,17 +5,27 @@
 # Squirrel
 **Very much a WIP project**
 
-squirrel is a command line program that tracks you writing progress and gives you useful information and cute pictures of squirrels.
+squirrel is a command line program that tracks you writing progress.
+The program can tell you:
+* How many days are left before due-date.
+* How many words you've wrote each day.
+* ...
 
 ## How it works
-Squirrel's design was inspired by `git`'s design (from a user perspective at least). To start a project, you have to initialize a new project in your directory of choice which will create a `.squirrel` folder structure in your directory similar to `.git` directories.
-And that folder will hold information about the project in general and the word counts.
-However `squirrel` is not a static program otherwise we wouldn't be able to track progress without explicit input of the user. That's why we need to have a `watch` command that will listen to any changes and update the appropriate information.
+Squirrel's design was inspired by `git`'s design (from a user perspective at least). To start a project, you have to initialize a new project in your directory of choice, which will create a `.squirrel` folder structure in your directory similar to `.git` directories.
+That folder will store:
+* project metadata (e.g name, description, goal, due date, etc.).
+* word counts.
+
+However `squirrel` is not a static program otherwise we couldn't track progress without explicit input of the user.
+The `watch` command will listen to any changes and update the count.
 
 ### Plugins or Project Types
-As many writing project use many file formats and programs, squirrel has a plugin architecture to provide multiple ways to count words.
-Which plugin will used depends on the `project-type` field.
-Here are the plugins available now:
+Many people use different file formats and software to write.
+The behaviour of `squirrel` can be changed with plugins to fit particular needs.
+The `project-type` field set by the users determines which plugin will be used.
+
+Plugins available now:
 * text
 * texcount
 
@@ -60,7 +70,7 @@ There 4 main verbs to interact with squirrel:
 * set
 * overview
 
-You can about their options with `-h` or `--help` option. (e.g `squirrel init -h`, etc.)
+You can learn more about their options with `-h` or `--help` option. (e.g `squirrel init -h`, etc.)
 #### Init
 ```sh
 squirrel init -n Assay --project-type text
@@ -77,11 +87,21 @@ squirrel watch start --daemon
 squirrel watch status
 squirrel watch stop
 ```
+
+#### Overview
+`overview` displays your writing progress.
+```sh
+# A general overview
+squirrel overview
+# to get a barchart
+squirrel overview --graph
+```
+
 ### Ignore files
 Similar to `.gitignore` files in git repos, you can ignore files in `squirrel` projects
 by adding a `.squirrelignore` file in the root of your project.
 
-Note: `.*`, `*~`, `*~` and `.<dir>` are ignored by default
+Note that `.*`, `*~`, `*~` and `.<dir>` are ignored by default
 
 Example file structure:
 * .squirrel/
@@ -114,7 +134,12 @@ PR so that everybody can chip in with their opinion.
 If your PR with be changing some dependencies, don't forget to update `Pipfile.lock` as well as the dependencies in `setup.py` with `pipenv-setup`.
 
 ### Plugins
-All plugins are located in `squirrel/plugin` and every plugin has its own directory which has in it the python code of the plugin (e.g `example_plugin.py`) and the `yaml` config file that tell squirrel the appropriate metadata as well as any dependencies the plugin needs to work properly. An example plugin can be found in `squirrel/plugins/example_plugin/`.
+All plugins are located in `squirrel/plugins`. Each plugin has its own directory, which has in it the Python module (e.g `example_plugin.py`) and the `yaml` config file.
+The `yaml` file stores:
+* metadata of the plugin
+* any dependencies the plugin needs to work properly.
+
+An example plugin can be found in `squirrel/plugins/example_plugin/`.
 
 #### How to Write Plugins:
 

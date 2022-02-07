@@ -95,7 +95,7 @@ class Formatter:
     @property
     def overview(self):
         return '\n'.join([
-            self.name, 
+            self.name,
             self.description,
             self.today,
             self.goal,
@@ -154,4 +154,3 @@ def _barchart(watches):
 
     console.print(
         Columns([Panel(output), format(stats)], expand=False, padding=5))
-
