@@ -78,7 +78,7 @@ squirrel init -n Assay --project-type text
 #### Set
 Set can be used after init to change or set fields.
 ```sh
-squirrel set --name "English Assay" --goal 10000 -due 05/01/2022
+squirrel set --name "English Assay" --goal 10000 --due 05/01/2022
 ```
 #### Watch
 Run this command to tell squirrel to watch your writing.
