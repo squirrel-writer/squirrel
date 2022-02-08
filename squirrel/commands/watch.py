@@ -11,7 +11,7 @@ from squirrel.plugin import PluginManager, Handler, Observer
 from ..vars import \
     logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
     DAEMON_NAME, ignore_file_path, console
-from ..xml import add_watch_entry
+from ..xml import get_data_from_project_file, add_watch_entry
 
 
 def watch(args):
@@ -30,7 +30,7 @@ def watch(args):
         return True
     else:
         try:
-            daemon(wd, logger)
+            return daemon(wd, logger)
         except KeyboardInterrupt:
             return False
 
@@ -100,7 +100,12 @@ def purge_deleted_files(files, logger):
 
 def daemon(wd, logger):
     watches = wd
-    plugin_manager = PluginManager(logger=logger)
+    try:
+        project_type = get_data_from_project_file()['project_type']
+    except FileNotFoundError:
+        return False
+
+    plugin_manager = PluginManager(project_type, logger=logger)
 
     # Loads '.ignore' into a variable
     ignores = plugin_manager.import_ignores(wd, ignore_file_path, logger)

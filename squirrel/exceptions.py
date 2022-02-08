@@ -1,0 +1,2 @@
+class ProjectNotSetupCorrectlyError(Exception):
+    pass

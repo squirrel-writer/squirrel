@@ -1,13 +1,87 @@
 import os
+from datetime import datetime, date, timedelta
 
-from .fixtures import test_directory, initialized
+import pytest
+
+from .fixtures import test_directory, initialized, one_watch_added
 from squirrel import xml
-from squirrel.vars import DIRECTORY_NAME
+from squirrel.vars import project_file_path, DIRECTORY_NAME, watch_file_path
 from squirrel.squirrel import _main
+from squirrel.exceptions import ProjectNotSetupCorrectlyError
+
+
+def test_get_watches_data_before_init(test_directory):
+    with pytest.raises(FileNotFoundError) as e:
+        xml.get_watches_data()
+    assert e.type == FileNotFoundError
+
+
+def test_get_watches_data_after_init(initialized):
+    watches = xml.get_watches_data()
+    assert len(watches) == 0
+
+
+def test_get_watches_data_after_watch(one_watch_added):
+    watches = xml.get_watches_data()
+    assert len(watches) == 1
+    assert watches == [
+        (one_watch_added[1].strftime('%d/%m/%Y'), 0, one_watch_added[0])
+    ]
+
+
+def test_get_watches_entry_before_init(test_directory):
+    with pytest.raises(FileNotFoundError) as e:
+        xml.get_watches_entry(date.today())
+
+    assert e.type == FileNotFoundError
+
+
+def test_get_watches_entry_after_init(initialized):
+    watches_tag, root = xml.get_watches_entry(date.today())
+    assert watches_tag is None
+    assert root is not None
+
+
+def test_get_watches_entry_after_watch(one_watch_added):
+    date_of_watch = one_watch_added[1]
+    watches_tag, root = xml.get_watches_entry(date_of_watch)
+    assert len(watches_tag) == 1
+    assert watches_tag[0].text == str(one_watch_added[0])
+
+    unavailable_date = date_of_watch - timedelta(days=1)
+    watches_tag, root = xml.get_watches_entry(unavailable_date)
+    assert watches_tag is None
+    assert root is not None
+
+
+def test_add_watch_entry_before_init(test_directory):
+    with pytest.raises(ProjectNotSetupCorrectlyError) as e:
+        xml.add_watch_entry(1, datetime.now())
+    assert e.type == ProjectNotSetupCorrectlyError
+
+
+def test_add_watch_entry_after_init(initialized):
+    datetime_of_watch = datetime.now()
+    assert xml.add_watch_entry(1, datetime_of_watch)
+    watches_tag, root = xml.get_watches_entry(datetime_of_watch.date())
+    assert len(watches_tag) == 1
+    assert watches_tag[0].text == str(1)
+
+
+def test_add_watch_entry_after_watch(one_watch_added):
+    datetime_of_watch = datetime.now()
+    assert not xml.add_watch_entry(1, datetime_of_watch)
+
+    assert xml.add_watch_entry(2, datetime_of_watch)
 
 
 def test_get_data_from_project_file(test_directory):
-    _main(['init', '-n', 'xmltest', '--goal', '10000'])
+    with pytest.raises(FileNotFoundError) as e:
+        xml.get_data_from_project_file()
+    assert e.type == FileNotFoundError
+
+    return_code = _main(['init', '-n', 'xmltest', '--goal', '10000'])
+    assert return_code == 0
 
     assert xml.get_data_from_project_file() == {
         'name': 'xmltest',
@@ -62,3 +136,52 @@ def test_update_project_file(initialized):
         'due-date': None,
         'project-type': 'text',
     }
+
+
+def test_build_project(test_directory):
+    path = os.path.join(os.getcwd(), DIRECTORY_NAME)
+    xml.build_project({
+        'name': 'test_building_project',
+        'description': None,
+        'goal': None,
+        'due': None,
+        'project_type': None,
+        'y': False,
+    }, path)
+
+    try:
+        with open(project_file_path, 'r') as f:
+            project = f.read()
+
+        with open(watch_file_path, 'r') as f:
+            watch = f.read()
+    except FileNotFoundError:
+        pytest.fail('file projects were not created')
+
+    # remove any whitespace to be able to create a
+    # test string without worrying about indentation and stuff
+    project = ''.join(project.split())
+    watch = ''.join(watch.split())
+
+    assert project == f'<?xmlversion=\'1.0\'encoding=\'utf-8\'?>' \
+        '<squirrelname="test_building_project">' \
+        f'<pathsrc="{os.getcwd()}/.squirrel"/>' \
+        '<description/>' \
+        '<due-date/>' \
+        '<goal>0</goal>' \
+        '<project-type>text</project-type>' \
+        '</squirrel>'
+
+    assert watch == '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'\
+        '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
+
+
+def test_parse_before_init(test_directory):
+    with pytest.raises(FileNotFoundError) as e:
+        xml.parse(os.path.join(os.getcwd(), project_file_path))
+
+    assert e.type == FileNotFoundError
+
+
+def test_parser_after_init(test_directory):
+    ...

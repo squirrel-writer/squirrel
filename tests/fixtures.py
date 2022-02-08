@@ -1,9 +1,11 @@
 import os
 import time
 import multiprocessing as mp
+from datetime import datetime
 
 import pytest
 
+from squirrel import xml
 from squirrel.squirrel import _main
 
 
@@ -32,3 +34,11 @@ def watching(initialized):
     watch.join()
     yield True
     _main(['watch', 'stop'])
+
+
+@pytest.fixture
+def one_watch_added(initialized):
+    count = 1
+    now = datetime.now()
+    xml.add_watch_entry(count, now)
+    yield (count, now.date())

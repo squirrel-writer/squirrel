@@ -6,6 +6,7 @@ from datetime import datetime
 from .vars import ignore_file_content, logger, console
 from .vars import PROJECT_FILENAME, WATCH_FILENAME, IGNORE_FILENAME
 from .vars import project_file_path, watch_file_path
+from .exceptions import ProjectNotSetupCorrectlyError
 
 
 def build_project(data: dict, path):
@@ -118,7 +119,11 @@ def build_ignore_file(file):
 
 def update_project_file(data: dict):
     path = project_file_path
-    tree = parse(path)
+    try:
+        tree = parse(path)
+    except FileNotFoundError:
+        return False
+
     squirrel = tree.getroot()
 
     valid = True
@@ -162,8 +167,15 @@ def update_project_file(data: dict):
 
 
 def get_data_from_project_file(basedir=''):
+    """Returns all the metadata available in the project
+    Raises FileNotFoundError, if files were not found"""
+    data = {}
     path = os.path.join(basedir, project_file_path)
-    tree = parse(path)
+    try:
+        tree = parse(path)
+    except FileNotFoundError:
+        raise
+
     squirrel = tree.getroot()
 
     try:
@@ -215,10 +227,16 @@ def get_data_from_project_file(basedir=''):
 
 
 def get_watches_data():
-    """returns all watches tag data with -1
-    being the key of the last watches"""
+    """returns all <watches> tag data
+
+    Raises FileNotFoundError when project files are not found.
+    Raises ProjectNotSetupCorrectlyError if xml files are not valid.
+    """
     path = watch_file_path
-    tree = parse(path)
+    try:
+        tree = parse(path)
+    except FileNotFoundError:
+        raise
     squirrel = tree.getroot()
 
     data = []
@@ -226,67 +244,80 @@ def get_watches_data():
         for watches in squirrel.findall('watches'):
             date = watches.attrib['date']
             data.append((date,
-                         watches.attrib['prev_count'],
+                         int(watches.attrib['prev_count']),
                          get_watches_last_count(watches)))
     except (AttributeError, KeyError):
-        sys.exit(1)
+        logger.error(f'Could not parse {path!r} correctly')
+        raise ProjectNotSetupCorrectlyError(
+            'Could not parse <watches> from xml file'
+        )
 
     return data
 
 
 def get_watches_last_count(watches):
+    """Return the last count of a <watches> tag.
+    (the last <watch> in a <watches>)"""
     if len(watches) == 0:
         return 0
-    else:
-        try:
-            return watches[-1].text
-        except AttributeError:
-            return 0
+
+    try:
+        return int(watches[-1].text)
+    except AttributeError:
+        return 0
 
 
+# TODO: Change name to get_watches_entry_by_date
 def get_watches_entry(date):
-    """returns the watches tag of the passed date and root element;
-    defaults to (None, root)"""
+    """returns the <watches> tag of the passed date and root element.
+    defaults to (None, root)
+    Raises FileNotFoundError if files are not present"""
     path = watch_file_path
-    tree = parse(path)
+    try:
+        tree = parse(path)
+    except FileNotFoundError:
+        raise
     squirrel = tree.getroot()
 
     for watches in squirrel.findall('watches'):
         try:
             if watches.attrib['date'] == date.strftime('%d/%m/%Y'):
                 return watches, squirrel
-        except AttributeError:
-            pass
-        except KeyError:
-            pass
+        except (KeyError, AttributeError):
+            logger.warning(
+                f'Some issues are present in {watch_file_path!r}'
+                f'make sure that project was initialized correclty'
+            )
     return None, squirrel
 
 
 def make_watch_entry(parent, dt: datetime, value: int):
+    """Create a <watch> tag associated with the parent"""
     watch = ET.SubElement(parent, 'watch', datetime=str(dt))
     watch.text = value
     return watch
 
 
 def add_watch_entry(total, dt: datetime):
-    """Add a watch tag to the watches tag of that date"""
+    """Add a <watch> tag to the <watches> tag of that date.
+    Raises ProjectNotSetupCorrectlyError when project is not initialized."""
     path = watch_file_path
 
     # We try to get the watch of the datetime passed
-    watches_date, root = get_watches_entry(dt.date())
+    try:
+        watches_date, root = get_watches_entry(dt.date())
+    except FileNotFoundError:
+        raise ProjectNotSetupCorrectlyError()
 
     if watches_date is not None:
         # If there are already <watch> inside <watches>, we have to verify that
         # they are different counts otherwise it's useless to record it
         # if in the other hand, we don't find any <watch> in <watches>
         # we should simply add a new <watch> tag
-        if len(watches_date) > 0:
-            if watches_date[-1].text != str(total):
-                make_watch_entry(watches_date, str(dt), str(total))
-            else:
-                return False
-        else:
-            make_watch_entry(watches_date, str(dt), str(total))
+        if (len(watches_date) > 0 and
+                watches_date[-1].text == str(total)):
+            return False
+        make_watch_entry(watches_date, str(dt), str(total))
 
     elif root is not None:
         # If haven't found <watches> tag, we need to create
@@ -311,6 +342,8 @@ def add_watch_entry(total, dt: datetime):
 
 
 def parse(path):
+    """Returns the ElementTree of an xml file.
+    Raises FileNotFoundError when project is not initialized."""
     try:
         parser_save_comments = ET.XMLParser(
             target=ET.TreeBuilder(insert_comments=True))
@@ -318,5 +351,5 @@ def parse(path):
         return tree
     except FileNotFoundError:
         console.print(f'Could not find {path!r};'
-                      ' Verify that project that initialized correctly.')
-        sys.exit(1)
+                      ' Verify that the project was initialized correctly.')
+        raise

@@ -8,7 +8,6 @@ from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
 import yaml
 
-from .xml import get_data_from_project_file
 from .vars import logger, PLUGIN_PATH
 
 
@@ -35,10 +34,8 @@ class Plugin:
 
 class PluginManager:
 
-    def __init__(self, logger=logger, project_type=''):
+    def __init__(self, project_type, logger=logger):
         self.project_type = project_type
-        if self.project_type == '':
-            self.project_type = get_data_from_project_file()['project-type']
 
         self.root_plugin_path = path.join(PLUGIN_PATH, self.project_type)
         self.yaml_plugin_path = path.join(

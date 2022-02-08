@@ -5,12 +5,20 @@ from datetime import datetime, date, timedelta
 from ..vars import console, logger
 from ..vars import squirrel_art
 from ..xml import get_data_from_project_file, get_watches_data
+from ..exceptions import ProjectNotSetupCorrectlyError
 
 
 def overview(args):
     logger.debug(args)
-    data = get_data_from_project_file()
-    watches = get_watches_data()
+    try:
+        data = get_data_from_project_file()
+    except FileNotFoundError:
+        return False
+
+    try:
+        watches = get_watches_data()
+    except (FileNotFoundError, ProjectNotSetupCorrectlyError):
+        return False
 
     if args.graph:
         _barchart(watches)
@@ -26,8 +34,7 @@ def _overview(project_data, watches):
     today = 0
     if len(watches):
         _, prev, total = watches[-1]
-        total = int(total)
-        today = total - int(prev)
+        today = total - prev
 
     formatter = Formatter(
         project_data.get('name', None),
@@ -109,7 +116,7 @@ def _barchart(watches):
     def make_dict(watches):
         d = {}
         for watch in watches:
-            d[watch[0]] = int(watch[2]) - int(watch[1])
+            d[watch[0]] = watch[2] - watch[1]
         return d
 
     def format(stats):
