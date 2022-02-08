@@ -65,6 +65,7 @@ class Formatter:
 
     @property
     def goal(self):
+        goal = self._goal
         if self._goal is None:
             goal = 0
         goal_reached = True if self.total > int(goal) else False

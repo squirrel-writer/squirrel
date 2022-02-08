@@ -1,3 +1,4 @@
+import pkgutil
 import importlib
 import subprocess
 from os import path
@@ -42,10 +43,12 @@ class PluginManager:
         self.root_plugin_path = path.join(PLUGIN_PATH, self.project_type)
         self.yaml_plugin_path = path.join(
             self.root_plugin_path, f'{self.project_type}.yaml')
+        yaml_config_file = pkgutil.get_data(__name__, self.yaml_plugin_path)
+
         self.plugin_module_path = f'squirrel.plugins.{self.project_type}.{self.project_type}'
 
         try:
-            yaml_config = self.load_yaml_config(self.yaml_plugin_path)
+            yaml_config = self.parse_yaml_config(yaml_config_file)
         except yaml.YAMLError as e:
             logger.error(
                 f'Could not load {self.project_type!r}\'s yaml config {e}')
@@ -63,10 +66,9 @@ class PluginManager:
         self.logger = logger
 
     @staticmethod
-    def load_yaml_config(path):
-        with open(path) as f:
-            data = yaml.safe_load(f)
-            return data
+    def parse_yaml_config(config_file):
+        data = yaml.safe_load(config_file)
+        return data
 
     def verify_pip_deps(self) -> bool:
         for dep in self.selected_plugin.pip_deps:
