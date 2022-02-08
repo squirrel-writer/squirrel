@@ -4,8 +4,7 @@ import subprocess
 from os import path
 from glob import iglob, glob
 
-from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
-from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler
 import yaml
 
 from .vars import logger, PLUGIN_PATH
