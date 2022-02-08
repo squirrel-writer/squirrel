@@ -6,8 +6,9 @@ from datetime import datetime
 import logging
 
 from daemonize import Daemonize
+from watchdog.observers import Observer
 
-from squirrel.plugin import PluginManager, Handler, Observer
+from squirrel.plugin import PluginManager, Handler
 from ..vars import \
     logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
     DAEMON_NAME, ignore_file_path, console
