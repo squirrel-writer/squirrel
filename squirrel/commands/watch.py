@@ -102,7 +102,7 @@ def purge_deleted_files(files, logger):
 def daemon(wd, logger):
     watches = wd
     try:
-        project_type = get_data_from_project_file()['project_type']
+        project_type = get_data_from_project_file()['project-type']
     except FileNotFoundError:
         return False
 
