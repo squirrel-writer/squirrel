@@ -19,4 +19,4 @@ repos:
     rev: v1.16.0
     hooks:
     -   id: codespell
-        entry: codespell squirrel/ tests/ README.md
+        entry: codespell --skip "*.pyc" squirrel/* tests/* README.md

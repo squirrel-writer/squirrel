@@ -63,7 +63,7 @@ def indent(tree, space="  ", level=0):
             if not child.tail or not child.tail.strip():
                 child.tail = child_indentation
 
-        # Dedent and then overwite preivous indent
+        # Indent and then overwrite previous indent
         if not child.tail.strip():
             child.tail = indentations[level]
 
