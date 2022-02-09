@@ -1,8 +1,11 @@
 import argparse
 from datetime import datetime
 
-from .parsers import *
-from ..commands import init, set_command, overview, watch
+from .parsers import (MainParserData, SubparsersData,
+                      InitParserData, WatchParserData, WatchSubparsersData,
+                      StartWatchParserData, StatusWatchParserData, StopWatchParserData,
+                      SetParserData, OverviewParserData, DataParserData)
+from ..commands import init, set_command, overview, watch, data
 from ..commands.watch import status, stop
 
 
@@ -14,6 +17,7 @@ def setup_parsers():
     _setup_set_parser(subparsers)
     _setup_overview_parser(subparsers)
     _setup_watch_parser(subparsers)
+    _setup_data_parser(subparsers)
 
     return main_parser
 
@@ -224,6 +228,33 @@ def _setup_overview_parser(subparsers):
 
     overview_parser.set_defaults(func=overview)
     return overview_parser
+
+
+def _setup_data_parser(subparsers):
+    data_parser = subparsers.add_parser(
+        DataParserData.name,
+        description=DataParserData.desc,
+        help=DataParserData.help
+    )
+
+    group = data_parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument(
+        '-t',
+        '--today',
+        action='store_true',
+        help='Returns all counts that were recorded today'
+    )
+
+    group.add_argument(
+        '-a',
+        '--all',
+        action='store_true',
+        help='Returns all counts that were recorded'
+    )
+
+    data_parser.set_defaults(func=data)
+    return data_parser
 
 
 def _valid_date(s):
