@@ -57,3 +57,9 @@ class OverviewParserData:
     name = 'overview'
     desc = 'shows your writing progress'
     help = 'shows an overview of your writing progress'
+
+
+class DataParserData:
+    name = 'data'
+    desc = 'Returns raw data from a squirrel project'
+    help = 'Returns squirrel project data in a raw format'
