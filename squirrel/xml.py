@@ -266,6 +266,20 @@ def get_watches_last_count(watches):
         return 0
 
 
+def get_day_watches(watches_tag):
+    """Returns all the <watch> tags in a <watches>.
+    Raises ProjectNotSetupCorrectlyError if project not initialized"""
+    for watch in watches_tag:
+        try:
+            watch_datetime = watch.attrib['datetime']
+            watch_count = int(watch.text)
+            yield watch_datetime, watch_count
+        except (AttributeError, KeyError):
+            raise ProjectNotSetupCorrectlyError(
+                'Watch file corrupted or not setup correctly'
+            )
+
+
 # TODO: Change name to get_watches_entry_by_date
 def get_watches_entry(date):
     """returns the <watches> tag of the passed date and root element.
