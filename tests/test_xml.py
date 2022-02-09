@@ -181,7 +181,3 @@ def test_parse_before_init(test_directory):
         xml.parse(os.path.join(os.getcwd(), project_file_path))
 
     assert e.type == FileNotFoundError
-
-
-def test_parser_after_init(test_directory):
-    ...
