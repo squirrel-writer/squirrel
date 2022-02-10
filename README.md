@@ -1,4 +1,4 @@
-![github_actions](https://github.com/squirrel-writer/squirrel/actions/workflows/ci.yml/badge.svg) ![Python - PEP8](https://github.com/squirrel-writer/squirrel/actions/workflows/pep8.yml/badge.svg) [![Gitter](https://badges.gitter.im/squirrel-writer/community.svg)](https://gitter.im/squirrel-writer/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![PyPI version](https://badge.fury.io/py/squirrel-writer.svg)](https://badge.fury.io/py/squirrel-writer) ![github_actions](https://github.com/squirrel-writer/squirrel/actions/workflows/ci.yml/badge.svg) ![Python - PEP8](https://github.com/squirrel-writer/squirrel/actions/workflows/pep8.yml/badge.svg) [![Gitter](https://badges.gitter.im/squirrel-writer/community.svg)](https://gitter.im/squirrel-writer/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ![squirrel-output](squirrel-overview-output.png "output of overview command")
 
