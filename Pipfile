@@ -19,6 +19,7 @@ check-manifest = "*"
 twine = "*"
 tox = "*"
 pre-commit = "*"
+yelp-gprof2dot = "*"
 
 [requires]
 python_version = "3.9"

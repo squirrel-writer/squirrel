@@ -119,25 +119,44 @@ def daemon(wd, logger):
     engine = plugin_manager.load()
 
     event_handler = Handler(ignores)
-    observer = Observer(timeout=60)
+    observer = Observer(timeout=70)
     observer.schedule(event_handler, watches, recursive=True)
     observer.start()
     logger.debug('Watchdog initialized')
     while True:
+        # TODO: Avoid testing event_handler as it
+        # bypasses the Observer timeout.
+        # (I think at least. Watchdog documentation isn't clear
+        # on what the timeout does exactly).
+        # And leads to some files not being tested.
         if event_handler.files:
+            # Make a copy of the files to avoid
+            # RuntimeError: Set changed size during iteration
+            # TODO: move this logic inside the EventHandler.
+            files = list(event_handler.files)
+
+            should_update_count = False
+
             # For loop to prompt modified files to log and project_files
-            for file in event_handler.files:
+            for file in files:
                 logger.info(f'Found a modified file <{file.split("/")[-1]}>')
                 if os.path.exists(file):
+                    should_update_count = True
                     project_files.add(file)
 
-            purge_deleted_files(project_files, logger)
+                if file in project_files:
+                    should_update_count = True
 
-            update_count(engine, project_files, logger=logger)
+            if should_update_count:
+                purge_deleted_files(project_files, logger)
+                update_count(engine, project_files, logger=logger)
 
-            # Clears list before a new run
+            # Clears list before a new run.
+            # TODO: This should move
+            # in the Future inside the EventHandler.
             event_handler.files.clear()
-            time.sleep(60 * 3)
+
+        time.sleep(60 * 3)
 
 
 def update_count(engine, files, logger=logger):
