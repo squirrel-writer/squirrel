@@ -19,8 +19,7 @@ ignore_file_path = IGNORE_FILENAME
 
 PLUGIN_PATH = 'plugins/'
 
-# TODO: find artist and credit him
-squirrel_art = """
+squirrel_art = r"""
                               _
                           .-'` `}
                   _./)   /       }
@@ -30,7 +29,7 @@ squirrel_art = """
                 \=' .-'   _`\  {
                  `'`;/      `,  }
                     _\       ;  }
-                   /__`;-...'--'
+               jgs /__`;-...'--'
 """
 
 ignore_file_content = """\
