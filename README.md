@@ -190,3 +190,17 @@ The testing suite is very small at the moment (about 7 tests).
 We need help in making it robust and exhaustive. Any contribution on this regard is highly appreciated.
 
 `squirrel` is still in an experimental stage. Bugs are probably present, so any testing and bug reporting is welcome.
+
+### Credit
+`Squirrel art` created by [Joan G. Stark](https://en.wikipedia.org/wiki/Joan_Stark) who is known in the ASCII world with the initials `jgs`.
+
+                               _
+                          .-'` `}
+                  _./)   /       }
+                .'o   \ |       }
+                '.___.'`.\    {`
+                /`\_/  , `.    }
+                \=' .-'   _`\  {
+                 `'`;/      `,  }
+                    _\       ;  }
+               jgs /__`;-...'--'
