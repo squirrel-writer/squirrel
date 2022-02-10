@@ -2,7 +2,9 @@ import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-from .vars import ignore_file_content, logger, console
+from rich.console import Console
+
+from .vars import ignore_file_content, logger
 from .vars import PROJECT_FILENAME, WATCH_FILENAME, IGNORE_FILENAME
 from .vars import project_file_path, watch_file_path
 from .exceptions import ProjectNotSetupCorrectlyError
@@ -363,6 +365,9 @@ def parse(path):
         tree = ET.parse(path, parser_save_comments)
         return tree
     except FileNotFoundError:
-        console.print(f'Could not find {path!r};'
-                      ' Verify that the project was initialized correctly.')
+        console = Console(stderr=True)
+        console.print(
+            f'Could not find {path!r};'
+            ' Verify that the project was initialized correctly.'
+        )
         raise

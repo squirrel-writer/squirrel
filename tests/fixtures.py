@@ -41,4 +41,4 @@ def one_watch_added(initialized):
     count = 1
     now = datetime.now()
     xml.add_watch_entry(count, now)
-    yield (count, now.date())
+    yield (count, now)

@@ -25,7 +25,7 @@ def test_get_watches_data_after_watch(one_watch_added):
     watches = xml.get_watches_data()
     assert len(watches) == 1
     assert watches == [
-        (one_watch_added[1].strftime('%d/%m/%Y'), 0, one_watch_added[0])
+        (one_watch_added[1].date().strftime('%d/%m/%Y'), 0, one_watch_added[0])
     ]
 
 
@@ -43,7 +43,7 @@ def test_get_watches_entry_after_init(initialized):
 
 
 def test_get_watches_entry_after_watch(one_watch_added):
-    date_of_watch = one_watch_added[1]
+    date_of_watch = one_watch_added[1].date()
     watches_tag, root = xml.get_watches_entry(date_of_watch)
     assert len(watches_tag) == 1
     assert watches_tag[0].text == str(one_watch_added[0])

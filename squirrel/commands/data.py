@@ -38,5 +38,5 @@ def _all():
         return False
 
     for watch in watches:
-        console.print(f'{watch[2]}, {watch[0]}')
+        console.print(f'{watch[0]}, {watch[2]}')
     return True
