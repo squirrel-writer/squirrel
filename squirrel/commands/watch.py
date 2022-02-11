@@ -23,7 +23,8 @@ def watch(args):
         daemon_logger, keep_fds = setup_daemon_logger()
         d = Daemonize(app=DAEMON_NAME,
                       pid=watch_daemon_pidfile_path,
-                      action=functools.partial(daemon, wd, daemon_logger),
+                      action=functools.partial(
+                          daemon, wd, daemon_logger, args.delay),
                       logger=daemon_logger,
                       chdir=wd,
                       keep_fds=keep_fds)
@@ -31,7 +32,7 @@ def watch(args):
         return True
     else:
         try:
-            return daemon(wd, logger)
+            return daemon(wd, logger, args.delay)
         except KeyboardInterrupt:
             return False
 
@@ -99,7 +100,7 @@ def purge_deleted_files(files, logger):
     files.difference_update(remove_files)
 
 
-def daemon(wd, logger):
+def daemon(wd, logger, delay=3):
     watches = wd
     try:
         project_type = get_data_from_project_file()['project-type']
@@ -156,7 +157,7 @@ def daemon(wd, logger):
             # in the Future inside the EventHandler.
             event_handler.files.clear()
 
-        time.sleep(60 * 3)
+        time.sleep(60 * delay)
 
 
 def update_count(engine, files, logger=logger):

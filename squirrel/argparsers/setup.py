@@ -139,6 +139,13 @@ def _setup_watch_parser(subparsers):
         action='store_true',
         help='daemonizes the watcher to run in the background'
     )
+    start_parser.add_argument(
+        '--delay',
+        type=int,
+        default=3,
+        help='Specify a delay (in minutes) when watching files.'
+        '\nDefaults 3 minutes.'
+    )
     start_parser.set_defaults(func=watch)
 
     status_parser = subparsers.add_parser(
