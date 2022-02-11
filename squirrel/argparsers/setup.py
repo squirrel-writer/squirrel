@@ -5,7 +5,7 @@ from .parsers import (MainParserData, SubparsersData,
                       InitParserData, WatchParserData, WatchSubparsersData,
                       StartWatchParserData, StatusWatchParserData, StopWatchParserData,
                       SetParserData, OverviewParserData, DataParserData)
-from ..commands import init, set_command, overview, watch, data
+from ..commands import init_cmd, set_cmd, overview_cmd, watch_cmd, data_cmd
 from ..commands.watch import status, stop
 
 
@@ -110,7 +110,7 @@ def _setup_init_parser(subparsers):
         action='store_true',
         help='ignore input prompts'
     )
-    init_parser.set_defaults(func=init)
+    init_parser.set_defaults(func=init_cmd)
 
     return init_parser
 
@@ -146,7 +146,7 @@ def _setup_watch_parser(subparsers):
         help='Specify a delay (in minutes) when watching files.'
         '\nDefaults 3 minutes.'
     )
-    start_parser.set_defaults(func=watch)
+    start_parser.set_defaults(func=watch_cmd)
 
     status_parser = subparsers.add_parser(
         StatusWatchParserData.name,
@@ -216,7 +216,7 @@ def _setup_set_parser(subparsers):
         help='set or change the project type'
     )
 
-    set_parser.set_defaults(func=set_command)
+    set_parser.set_defaults(func=set_cmd)
     return set_parser
 
 
@@ -233,7 +233,7 @@ def _setup_overview_parser(subparsers):
         help='Display a bar chart for the last 5 days of writing'
     )
 
-    overview_parser.set_defaults(func=overview)
+    overview_parser.set_defaults(func=overview_cmd)
     return overview_parser
 
 
@@ -260,7 +260,7 @@ def _setup_data_parser(subparsers):
         help='Returns all counts that were recorded'
     )
 
-    data_parser.set_defaults(func=data)
+    data_parser.set_defaults(func=data_cmd)
     return data_parser
 
 

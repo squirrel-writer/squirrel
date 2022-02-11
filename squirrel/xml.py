@@ -88,7 +88,7 @@ def build_project_file(data: dict, file):
 
     goal = ET.SubElement(squirrel, 'goal')
     arg_goal = data.get('goal')
-    goal.text = str(arg_goal) if arg_goal is not None else '0'
+    goal.text = str(arg_goal) if arg_goal is not None else None
 
     project_type = ET.SubElement(squirrel, 'project-type')
     p_type = data.get('project_type', 'text')
@@ -114,8 +114,7 @@ def build_watch_file(file):
 def build_ignore_file(file):
     with open(file, 'w') as f:
         f.write(ignore_file_content)
-        return True
-    return False
+    return True
 
 
 def update_project_file(data: dict):
@@ -306,7 +305,7 @@ def get_watches_entry(date):
     return None, squirrel
 
 
-def make_watch_entry(parent, dt: datetime, value: int):
+def make_watch_entry(parent, dt: str, value: str):
     """Create a <watch> tag associated with the parent"""
     watch = ET.SubElement(parent, 'watch', datetime=str(dt))
     watch.text = value

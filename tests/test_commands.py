@@ -1,11 +1,14 @@
 import os
 
 import pytest
+import yaml
 
-from .fixtures import initialized, test_directory, watching, one_watch_added
 from squirrel.squirrel import _main
+from squirrel.exceptions import PluginNotSetupCorrectlyError
 from squirrel.vars import DIRECTORY_NAME, project_file_path, watch_file_path, watch_daemon_pidfile_path, watch_daemon_logfile_path
 from squirrel import xml
+
+from .fixtures import initialized, test_directory, watching, one_watch_added
 
 
 def test_init(test_directory):
@@ -29,7 +32,7 @@ def test_init(test_directory):
         'name': None,
         'path': os.path.join(os.getcwd(), DIRECTORY_NAME),
         'description': None,
-        'goal': '0',
+        'goal': None,
         'due-date': None,
         'project-type': 'text'
     }
@@ -51,11 +54,55 @@ def test_correct_set_command(initialized):
     assert project_data['due-date'] == '01/01/2022'
 
 
-def test_watch_command_after_init(watching):
+def test_watch_command_log_and_pid_file_creation(watching):
     # test if log file was created
     assert os.path.isfile(watch_daemon_logfile_path)
     # test if pidfile was created
     assert os.path.isfile(watch_daemon_pidfile_path)
+
+
+def test_watch_when_yaml_plugin_file_not_available(initialized, mocker, caplog):
+    # Similate that the yaml config is not present
+    mocker.patch(
+        'squirrel.plugin.pkgutil.get_data',
+        side_effect=FileNotFoundError
+    )
+
+    return_code = _main(['watch', 'start'])
+
+    assert return_code != 0
+    assert type(caplog.records[-1]) != PluginNotSetupCorrectlyError
+
+
+def test_watch_when_yaml_plugin_file_unparsable(initialized, mocker, caplog):
+    # Similate yaml config is unparsable
+    mocker.patch(
+        'squirrel.plugin.yaml.safe_load',
+        side_effect=yaml.YAMLError
+    )
+
+    return_code = _main(['watch', 'start'])
+
+    assert return_code != 0
+    assert type(caplog.records[-1].msg) == PluginNotSetupCorrectlyError
+
+
+def test_watch_when_plugin_unimportable(initialized, mocker, caplog):
+    mocker.patch(
+        'squirrel.commands.watch.get_data_from_project_file',
+        return_value={'project-type': 'text'}
+    )
+
+    # similate plugin is unimportable
+    mocker.patch(
+        'squirrel.plugin.importlib.import_module',
+        side_effect=ImportError
+    )
+
+    return_code = _main(['watch', 'start'])
+
+    assert return_code != 0
+    assert str(caplog.records[-1].msg) == f'Could not load {"text"!r}'
 
 
 def test_overview_after_init(initialized):

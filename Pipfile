@@ -20,6 +20,7 @@ twine = "*"
 tox = "*"
 pre-commit = "*"
 yelp-gprof2dot = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.9"

@@ -45,6 +45,7 @@ def test_get_watches_entry_after_init(initialized):
 def test_get_watches_entry_after_watch(one_watch_added):
     date_of_watch = one_watch_added[1].date()
     watches_tag, root = xml.get_watches_entry(date_of_watch)
+    assert watches_tag is not None
     assert len(watches_tag) == 1
     assert watches_tag[0].text == str(one_watch_added[0])
 
@@ -63,7 +64,8 @@ def test_add_watch_entry_before_init(test_directory):
 def test_add_watch_entry_after_init(initialized):
     datetime_of_watch = datetime.now()
     assert xml.add_watch_entry(1, datetime_of_watch)
-    watches_tag, root = xml.get_watches_entry(datetime_of_watch.date())
+    watches_tag, _ = xml.get_watches_entry(datetime_of_watch.date())
+    assert watches_tag is not None
     assert len(watches_tag) == 1
     assert watches_tag[0].text == str(1)
 
@@ -99,7 +101,7 @@ def test_get_data_from_project_file(test_directory):
         'name': None,
         'path': os.path.join(os.getcwd(), DIRECTORY_NAME),
         'description': None,
-        'goal': '0',
+        'goal': None,
         'due-date': None,
         'project-type': 'text'
     }
@@ -168,7 +170,7 @@ def test_build_project(test_directory):
         f'<pathsrc="{os.getcwd()}/.squirrel"/>' \
         '<description/>' \
         '<due-date/>' \
-        '<goal>0</goal>' \
+        '<goal/>' \
         '<project-type>text</project-type>' \
         '</squirrel>'
 

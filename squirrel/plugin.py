@@ -8,6 +8,7 @@ from watchdog.events import PatternMatchingEventHandler
 import yaml
 
 from .vars import logger, PLUGIN_PATH
+from .exceptions import PluginNotSetupCorrectlyError
 
 
 class Plugin:
@@ -36,35 +37,64 @@ class PluginManager:
     def __init__(self, project_type, logger=logger):
         self.project_type = project_type
 
+        self.plugin_module_path = f'squirrel.plugins.{self.project_type}.{self.project_type}'
         self.root_plugin_path = path.join(PLUGIN_PATH, self.project_type)
         self.yaml_plugin_path = path.join(
             self.root_plugin_path, f'{self.project_type}.yaml')
-        yaml_config_file = pkgutil.get_data(__name__, self.yaml_plugin_path)
-
-        self.plugin_module_path = f'squirrel.plugins.{self.project_type}.{self.project_type}'
 
         try:
-            yaml_config = self.parse_yaml_config(yaml_config_file)
-        except yaml.YAMLError as e:
-            logger.error(
-                f'Could not load {self.project_type!r}\'s yaml config {e}')
-            raise SystemExit(1)
+            yaml_config_file = pkgutil.get_data(
+                __name__, self.yaml_plugin_path)
+        except FileNotFoundError:
+            raise PluginNotSetupCorrectlyError(
+                f'Could not find {self.yaml_plugin_path!r}!')
 
-        yaml_metadata = {
-            'name': yaml_config['name'],
-            'description': yaml_config.get('description', ''),
-            'authors': yaml_config.get('authors', ()),
-            'version': yaml_config['version'],
-            'deps': yaml_config.get('deps', {})
-        }
+        yaml_metadata = self.parse_yaml_config(
+            yaml_config_file, self.project_type)
+
         self.selected_plugin = Plugin(*yaml_metadata.values())
 
         self.logger = logger
+        self.loaded = False
 
     @staticmethod
-    def parse_yaml_config(config_file):
-        data = yaml.safe_load(config_file)
-        return data
+    def parse_yaml_config(config_file, project_type):
+        """Returns the metadata available of a plugin from a yaml file.
+        Raises PluginNotSetupCorrectlyError when there's a problem with yaml."""
+        try:
+            data = yaml.safe_load(config_file)
+        except yaml.YAMLError as e:
+            raise PluginNotSetupCorrectlyError(
+                f'Could not parse {project_type!r}\'s yaml config {e}')
+
+        try:
+            name = data['name']
+        except KeyError:
+            raise PluginNotSetupCorrectlyError(
+                f'{"name"!r} field not found in yaml config')
+
+        try:
+            version = data['version']
+        except KeyError:
+            raise PluginNotSetupCorrectlyError(
+                f'{"version"!r} field not found in yaml config')
+
+        deps = data.get('deps', {})
+        if deps is None:
+            deps = {}
+
+        authors = data.get('authors', [])
+        if authors is None:
+            authors = []
+
+        yaml_metadata = {
+            'name': name,
+            'description': data.get('description', ''),
+            'authors': authors,
+            'version': version,
+            'deps': deps
+        }
+        return yaml_metadata
 
     def verify_pip_deps(self) -> bool:
         for dep in self.selected_plugin.pip_deps:
@@ -74,7 +104,7 @@ class PluginManager:
                 return False
         return True
 
-    def sys_deps_satisfied(self) -> bool:
+    def verify_sys_deps(self) -> bool:
         for dep in self.selected_plugin.sys_deps:
             try:
                 subprocess.run(f'command -v {dep}',
@@ -86,23 +116,24 @@ class PluginManager:
 
     def load(self):
         """Loads the module declared in the xml project file.
-        The module must have a get_count(files: list) -> int function"""
+        The module must have a get_count(files: list) -> int function.
+        Raises PluginNotSetupCorrectlyError when there's a problem with using the plugin."""
         if not self.verify_pip_deps():
-            self.logger.error(
-                f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}')
-            raise SystemExit(1)
+            raise PluginNotSetupCorrectlyError(
+                f'Could not satisfy the pip requirements of {self.selected_plugin.name!r}'
+            )
 
-        if not self.sys_deps_satisfied():
-            self.logger.error(
-                f'Could not satisfy sys requirements of {self.selected_plugin.name!r}')
-            raise SystemExit(1)
+        if not self.verify_sys_deps():
+            raise PluginNotSetupCorrectlyError(
+                f'Could not satisfy sys requirements of {self.selected_plugin.name!r}'
+            )
 
         try:
             plugin = importlib.import_module(self.plugin_module_path)
+            self.loaded = True
         except (ImportError, AttributeError):
-            self.logger.error(
-                f'Could not load {self.project_type}')
-            raise SystemExit(1)
+            raise PluginNotSetupCorrectlyError(
+                f'Could not load {self.project_type!r}')
 
         self.logger.debug(f'{self.project_type!r} was loaded')
 

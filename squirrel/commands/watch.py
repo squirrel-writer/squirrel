@@ -13,6 +13,7 @@ from ..vars import \
     logger, watch_daemon_pidfile_path, watch_daemon_logfile_path, \
     DAEMON_NAME, ignore_file_path, console
 from ..xml import get_data_from_project_file, add_watch_entry
+from ..exceptions import PluginNotSetupCorrectlyError, ProjectNotSetupCorrectlyError
 
 
 def watch(args):
@@ -102,22 +103,15 @@ def purge_deleted_files(files, logger):
 
 def daemon(wd, logger, delay=3):
     watches = wd
+
     try:
-        project_type = get_data_from_project_file()['project-type']
-    except FileNotFoundError:
+        project_files, ignores, plugin_manager = pre_daemon_setup(
+            wd, logger=logger)
+    except (PluginNotSetupCorrectlyError, ProjectNotSetupCorrectlyError) as e:
+        logger.error(e)
         return False
 
-    plugin_manager = PluginManager(project_type, logger=logger)
-
-    # Loads '.ignore' into a variable
-    ignores = plugin_manager.import_ignores(wd, ignore_file_path, logger)
-    logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
-
-    # Loads file in project directory into project_files list
-    project_files = plugin_manager.get_files(wd, ignores)
-    logger.info(f'Found {len(project_files)} files in project folder')
-
-    engine = plugin_manager.load()
+    engine = plugin_manager.plugin.module
 
     event_handler = Handler(ignores)
     observer = Observer(timeout=70)
@@ -158,6 +152,36 @@ def daemon(wd, logger, delay=3):
             event_handler.files.clear()
 
         time.sleep(60 * delay)
+
+
+def pre_daemon_setup(cwd, logger=logger):
+    """Runs all the necessary steps before listening for files.
+    Raises ProjectNotSetupCorrectlyError if plugin name is unacessable.
+    Raises PluginNotSetupCorrectlyError if there's any problem with the plugin."""
+    try:
+        project_type = get_data_from_project_file()['project-type']
+    except FileNotFoundError:
+        raise ProjectNotSetupCorrectlyError()
+
+    try:
+        plugin_manager = PluginManager(project_type, logger=logger)
+    except PluginNotSetupCorrectlyError:
+        raise
+
+    # Loads '.ignore' into a variable
+    ignores = plugin_manager.import_ignores(cwd, ignore_file_path, logger)
+    logger.debug(f'Added ignores {ignores.get("dir")}{ignores.get("file")}')
+
+    # Loads file in project directory into project_files list
+    project_files = plugin_manager.get_files(cwd, ignores)
+    logger.info(f'Found {len(project_files)} files in project folder')
+
+    try:
+        plugin_manager.load()
+    except PluginNotSetupCorrectlyError:
+        raise
+
+    return (project_files, ignores, plugin_manager)
 
 
 def update_count(engine, files, logger=logger):
