@@ -21,6 +21,7 @@ tox = "*"
 pre-commit = "*"
 yelp-gprof2dot = "*"
 pytest-mock = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.9"
