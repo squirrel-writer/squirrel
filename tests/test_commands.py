@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 import pytest
 import yaml
@@ -51,7 +52,7 @@ def test_correct_set_command(initialized):
     assert project_data['project-type'] == 'texcount'
     assert project_data['name'] == 'test2'
     assert project_data['goal'] == '15'
-    assert project_data['due-date'] == '2022-01-01'
+    assert project_data['due-date'] == date(year=2022, month=1, day=1)
 
 
 def test_watch_command_log_and_pid_file_creation(watching):

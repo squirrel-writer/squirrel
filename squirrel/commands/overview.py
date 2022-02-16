@@ -26,15 +26,15 @@ def overview(args):
         return False
 
     if args.graph:
-        _barchart(watches)
+        _barchart(watches, args.format)
         return True
     else:
-        _overview(data, watches)
+        _overview(data, watches, args.format)
         return True
     return False
 
 
-def _overview(project_data, watches):
+def _overview(project_data, watches, date_format):
     total = 0
     today = 0
     if len(watches):
@@ -46,15 +46,17 @@ def _overview(project_data, watches):
         project_data.get('description', None),
         project_data.get('goal', None),
         project_data.get('due-date', None),
-        project_data.get('project_type', None),
+        project_data.get('project-type', None),
         total,
-        today
+        today,
+        format=date_format
     )
+    logger.debug(project_data)
     console.print(Columns([squirrel_art, Panel(formatter.overview)]))
 
 
 class Formatter:
-    def __init__(self, name, description, goal, due_date, project_type, total, today):
+    def __init__(self, name, description, goal, due_date, project_type, total, today, format=DEFAULT_DATE_FORMAT):
         self._name = name
         self._description = description
         self._goal = goal
@@ -62,6 +64,7 @@ class Formatter:
         self._project_type = project_type
         self.total = total
         self._today = today
+        self.format = format
 
     @property
     def name(self):
@@ -92,12 +95,13 @@ class Formatter:
     def due_date(self):
         due_date_formatted = self._due_date
         if self._due_date is not None:
-            dd = datetime.strptime(self._due_date, DEFAULT_DATE_FORMAT)
-            if datetime.now() <= dd:
+            dd = self._due_date
+            dd_formated = self._due_date.strftime(self.format)
+            if date.today() <= dd:
                 delta = dd - datetime.now()
-                due_date_formatted = f'{self._due_date} [italic blue]({delta.days} days left)[/]'
+                due_date_formatted = f'{dd_formated} [italic blue]({delta.days} days left)[/]'
             else:
-                due_date_formatted = f'[blinking red]{self._due_date}[/]'
+                due_date_formatted = f'[blinking red]{dd_formated}[/]'
 
         return f'[hot_pink3]Due Date:[/] {due_date_formatted}'
 
@@ -117,7 +121,7 @@ class Formatter:
         ])
 
 
-def _barchart(watches):
+def _barchart(watches, date_format):
     def make_dict(watches):
         d = {}
         for watch in watches:
@@ -125,7 +129,7 @@ def _barchart(watches):
         return d
 
     def format(stats):
-        return '\n'.join([f'• {dates[i]} : {stat} [italic]words[/]' for i, stat in enumerate(stats)])
+        return '\n'.join([f'• {dates[i].strftime(date_format)} : {stat} [italic]words[/]' for i, stat in enumerate(stats)])
 
     def normalize(stats):
         _max = max(stats)
@@ -157,7 +161,7 @@ def _barchart(watches):
     logger.debug(f'_barchart: {watches}')
     watches_d = make_dict(watches)
     today = date.today()
-    dates = [(today - timedelta(i)).strftime('%d/%m/%Y')
+    dates = [today - timedelta(i)
              for i in reversed(range(0, 5))]
     stats = [watches_d.get(d, 0) for d in dates]
 

@@ -8,6 +8,7 @@ from .parsers import (MainParserData, SubparsersData,
                       SetParserData, OverviewParserData, DataParserData)
 from ..commands import init_cmd, set_cmd, overview_cmd, watch_cmd, data_cmd
 from ..commands.watch import status, stop
+from ..vars import DEFAULT_DATE_FORMAT
 
 
 def setup_parsers():
@@ -226,6 +227,14 @@ def _setup_overview_parser(subparsers):
         OverviewParserData.name,
         description=OverviewParserData.desc,
         help=OverviewParserData.help
+    )
+
+    overview_parser.add_argument(
+        '-f',
+        '--format',
+        type=str,
+        help='The date format of the output',
+        default=DEFAULT_DATE_FORMAT
     )
 
     overview_parser.add_argument(

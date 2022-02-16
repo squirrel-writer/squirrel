@@ -204,9 +204,9 @@ def get_data_from_project_file(basedir=''):
         goal = None
 
     try:
-        # TODO: This should in the future return a datetime object
-        due_date = squirrel.find('due-date').text
-    except (AttributeError, KeyError):
+        due_date = datetime.strptime(squirrel.find(
+            'due-date').text, DEFAULT_DATE_FORMAT).date()
+    except (AttributeError, KeyError, TypeError):
         logger.error('Could not find due_date field')
         due_date = None
 
