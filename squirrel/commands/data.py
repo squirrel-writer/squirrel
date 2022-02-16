@@ -1,7 +1,7 @@
 from datetime import date
 
 from squirrel import xml
-from squirrel.vars import logger, console
+from squirrel.vars import logger, console, DEFAULT_DATE_FORMAT, DEFAULT_DATETIME_FORMAT
 from squirrel.exceptions import ProjectNotSetupCorrectlyError
 
 
@@ -20,7 +20,7 @@ def data(args):
     return False
 
 
-def _today(format="%Y-%m-%d %H:%M:%S"):
+def _today(format=DEFAULT_DATETIME_FORMAT):
     today = date.today()
     try:
         watches, _ = xml.get_watches_entry(today)
@@ -36,7 +36,7 @@ def _today(format="%Y-%m-%d %H:%M:%S"):
     return True
 
 
-def _all(format="%Y-%m-%d"):
+def _all(format=DEFAULT_DATE_FORMAT):
     try:
         watches = xml.get_watches_data()
     except (ProjectNotSetupCorrectlyError, FileNotFoundError):

@@ -17,6 +17,9 @@ watch_daemon_pidfile_path = os.path.join(DIRECTORY_NAME, WATCH_DAEMON_PIDFILE)
 watch_daemon_logfile_path = os.path.join(DIRECTORY_NAME, DAEMON_LOGFILE)
 ignore_file_path = IGNORE_FILENAME
 
+DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+DEFAULT_DATE_FORMAT = '%Y-%m-%d'
+
 PLUGIN_PATH = 'plugins/'
 
 squirrel_art = r"""
