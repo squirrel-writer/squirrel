@@ -177,6 +177,22 @@ def test_data_today_after_watch(one_watch_added, capsys):
     assert out == f'{one_watch_added[1].strftime("%Y-%m-%d %H:%M:%S")}, {one_watch_added[0]}\n'
 
 
+@pytest.mark.parametrize(
+    'args',
+    [
+        ['data', '--today', '-f', '%d/%m/%Y %H:%M:%S'],
+        ['data', '-t', '-f', '%d-%m-%Y %H:%M'],
+    ]
+)
+def test_data_today_with_custom_format(args, one_watch_added, capsys):
+    return_code = _main(args)
+    out, err = capsys.readouterr()
+
+    assert return_code == 0
+    assert err == ''
+    assert out == f'{one_watch_added[1].strftime(args[-1])}, {one_watch_added[0]}\n'
+
+
 def test_data_all_after_watch(one_watch_added, capsys):
     return_code = _main(['data', '--all'])
     out, err = capsys.readouterr()
@@ -184,3 +200,19 @@ def test_data_all_after_watch(one_watch_added, capsys):
     assert return_code == 0
     assert err == ''
     assert out == f"{one_watch_added[1].date().strftime('%Y-%m-%d')}, {one_watch_added[0]}\n"
+
+
+@pytest.mark.parametrize(
+    'args',
+    [
+        ['data', '--all', '-f', '%d/%m/%Y'],
+        ['data', '--all', '-f', '%d-%m-%Y']
+    ]
+)
+def test_data_all_with_custom_format(args, one_watch_added, capsys):
+    return_code = _main(args)
+    out, err = capsys.readouterr()
+
+    assert return_code == 0
+    assert err == ''
+    assert out == f"{one_watch_added[1].date().strftime(args[-1])}, {one_watch_added[0]}\n"

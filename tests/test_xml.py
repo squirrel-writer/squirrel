@@ -140,16 +140,52 @@ def test_update_project_file(initialized):
     }
 
 
-def test_build_project(test_directory):
+@pytest.mark.parametrize(
+    'args,expected',
+    [
+        ({
+            'name': 'test_building_project',
+            'description': None,
+            'goal': None,
+            'due': None,
+            'project_type': None,
+            'y': False,
+        }, (
+            lambda cwd: f'<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'
+            '<squirrelname="test_building_project">'
+            f'<pathsrc="{cwd}/.squirrel"/>'
+            '<description/>'
+            '<due-date/>'
+            '<goal/>'
+            '<project-type>text</project-type>'
+            '</squirrel>',
+            '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'
+            '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
+        )),
+        ({
+            'name': 'test_building_project',
+            'description': 'description here',
+            'goal': 10000,
+            'due': date.today(),
+            'project_type': 'texcount',
+            'y': False,
+        }, (
+            lambda cwd: f'<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'
+            '<squirrelname="test_building_project">'
+            f'<pathsrc="{cwd}/.squirrel"/>'
+            '<description>descriptionhere</description>'
+            f'<due-date>{date.today().strftime("%Y-%m-%d")}</due-date>'
+            '<goal>10000</goal>'
+            '<project-type>texcount</project-type>'
+            '</squirrel>',
+            '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'
+            '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
+        ))
+    ]
+)
+def test_build_project(args, expected, test_directory):
     path = os.path.join(os.getcwd(), DIRECTORY_NAME)
-    xml.build_project({
-        'name': 'test_building_project',
-        'description': None,
-        'goal': None,
-        'due': None,
-        'project_type': None,
-        'y': False,
-    }, path)
+    xml.build_project(args, path)
 
     try:
         with open(project_file_path, 'r') as f:
@@ -165,17 +201,8 @@ def test_build_project(test_directory):
     project = ''.join(project.split())
     watch = ''.join(watch.split())
 
-    assert project == f'<?xmlversion=\'1.0\'encoding=\'utf-8\'?>' \
-        '<squirrelname="test_building_project">' \
-        f'<pathsrc="{os.getcwd()}/.squirrel"/>' \
-        '<description/>' \
-        '<due-date/>' \
-        '<goal/>' \
-        '<project-type>text</project-type>' \
-        '</squirrel>'
-
-    assert watch == '<?xmlversion=\'1.0\'encoding=\'utf-8\'?>'\
-        '<squirrel><!--Thisisafilegeneratedbysquirrel.Modifyitatyourownrisk.--></squirrel>'
+    assert project == expected[0](os.getcwd())
+    assert watch == expected[1]
 
 
 def test_parse_before_init(test_directory):
