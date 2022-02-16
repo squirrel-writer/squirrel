@@ -4,7 +4,7 @@ import pytest
 import yaml
 
 from squirrel.squirrel import _main
-from squirrel.exceptions import PluginNotSetupCorrectlyError
+from squirrel.exceptions import PluginNotSetupCorrectlyError, ProjectNotSetupCorrectlyError
 from squirrel.vars import DIRECTORY_NAME, project_file_path, watch_file_path, watch_daemon_pidfile_path, watch_daemon_logfile_path
 from squirrel import xml
 
@@ -108,6 +108,25 @@ def test_watch_when_plugin_unimportable(initialized, mocker, caplog):
 def test_overview_after_init(initialized):
     return_code = _main(['overview'])
     assert return_code == 0
+
+
+@pytest.mark.parametrize(
+    'args',
+    [
+        ['overview'],
+        ['overview', '--graph']
+    ]
+)
+def test_overview_when_watch_file_not_parsable(args, initialized, mocker, capsys):
+    mocker.patch(
+        'squirrel.commands.overview.get_watches_data',
+        side_effect=ProjectNotSetupCorrectlyError
+    )
+
+    return_code = _main(args)
+    out, err = capsys.readouterr()
+    assert return_code != 0
+    assert err != ''
 
 
 @pytest.mark.parametrize(

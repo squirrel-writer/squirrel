@@ -1,6 +1,8 @@
+from datetime import datetime, date, timedelta
+
 from rich.panel import Panel
 from rich.columns import Columns
-from datetime import datetime, date, timedelta
+from rich.console import Console
 
 from ..vars import console, logger
 from ..vars import squirrel_art
@@ -17,7 +19,9 @@ def overview(args):
 
     try:
         watches = get_watches_data()
-    except (FileNotFoundError, ProjectNotSetupCorrectlyError):
+    except (FileNotFoundError, ProjectNotSetupCorrectlyError) as e:
+        console = Console(stderr=True)
+        console.print(e)
         return False
 
     if args.graph:
