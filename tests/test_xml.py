@@ -25,7 +25,7 @@ def test_get_watches_data_after_watch(one_watch_added):
     watches = xml.get_watches_data()
     assert len(watches) == 1
     assert watches == [
-        (one_watch_added[1].date().strftime('%Y-%m-%d'), 0, one_watch_added[0])
+        (one_watch_added[1].date(), 0, one_watch_added[0])
     ]
 
 

@@ -91,7 +91,7 @@ class Formatter:
     def due_date(self):
         due_date_formatted = self._due_date
         if self._due_date is not None:
-            dd = datetime.strptime(self._due_date, '%d/%m/%Y')
+            dd = datetime.strptime(self._due_date, '%Y-%m-%d')
             if datetime.now() <= dd:
                 delta = dd - datetime.now()
                 due_date_formatted = f'{self._due_date} [italic blue]({delta.days} days left)[/]'

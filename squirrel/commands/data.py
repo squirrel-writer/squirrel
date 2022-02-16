@@ -9,13 +9,18 @@ def data(args):
     logger.debug(args)
 
     if args.today:
+        if args.format is not None:
+            return _today(format=args.format)
         return _today()
     elif args.all:
+        if args.format is not None:
+            return _all(format=args.format)
         return _all()
+
     return False
 
 
-def _today():
+def _today(format="%Y-%m-%d %H:%M:%S"):
     today = date.today()
     try:
         watches, _ = xml.get_watches_entry(today)
@@ -24,19 +29,19 @@ def _today():
     if watches is not None:
         try:
             for dt, count in xml.get_day_watches(watches):
-                console.print(f'{dt}, {count}')
+                console.print(f'{dt.strftime(format)}, {count}')
         except ProjectNotSetupCorrectlyError as e:
             logger.error(e)
             return False
     return True
 
 
-def _all():
+def _all(format="%Y-%m-%d"):
     try:
         watches = xml.get_watches_data()
     except (ProjectNotSetupCorrectlyError, FileNotFoundError):
         return False
 
     for watch in watches:
-        console.print(f'{watch[0]}, {watch[2]}')
+        console.print(f'{watch[0].strftime(format)}, {watch[2]}')
     return True

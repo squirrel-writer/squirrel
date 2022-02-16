@@ -174,7 +174,7 @@ def test_data_today_after_watch(one_watch_added, capsys):
 
     assert return_code == 0
     assert err == ''
-    assert out == f'{one_watch_added[1].strftime("%d/%m/%Y %H:%M:%S")}, {one_watch_added[0]}\n'
+    assert out == f'{one_watch_added[1].strftime("%Y-%m-%d %H:%M:%S")}, {one_watch_added[0]}\n'
 
 
 def test_data_all_after_watch(one_watch_added, capsys):
