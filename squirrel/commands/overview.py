@@ -6,6 +6,7 @@ from rich.console import Console
 
 from ..vars import console, logger
 from ..vars import squirrel_art
+from ..vars import DEFAULT_DATE_FORMAT
 from ..xml import get_data_from_project_file, get_watches_data
 from ..exceptions import ProjectNotSetupCorrectlyError
 
@@ -91,7 +92,7 @@ class Formatter:
     def due_date(self):
         due_date_formatted = self._due_date
         if self._due_date is not None:
-            dd = datetime.strptime(self._due_date, '%Y-%m-%d')
+            dd = datetime.strptime(self._due_date, DEFAULT_DATE_FORMAT)
             if datetime.now() <= dd:
                 delta = dd - datetime.now()
                 due_date_formatted = f'{self._due_date} [italic blue]({delta.days} days left)[/]'

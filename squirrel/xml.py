@@ -7,6 +7,7 @@ from rich.console import Console
 from .vars import ignore_file_content, logger
 from .vars import PROJECT_FILENAME, WATCH_FILENAME, IGNORE_FILENAME
 from .vars import project_file_path, watch_file_path
+from .vars import DEFAULT_DATETIME_FORMAT, DEFAULT_DATE_FORMAT
 from .exceptions import ProjectNotSetupCorrectlyError
 
 
@@ -242,7 +243,8 @@ def get_watches_data():
     data = []
     try:
         for watches in squirrel.findall('watches'):
-            date = datetime.strptime(watches.attrib['date'], '%Y-%m-%d').date()
+            date = datetime.strptime(
+                watches.attrib['date'], DEFAULT_DATE_FORMAT).date()
             data.append((date,
                          int(watches.attrib['prev_count']),
                          get_watches_last_count(watches)))
@@ -273,7 +275,7 @@ def get_day_watches(watches_tag):
     for watch in watches_tag:
         try:
             watch_datetime = datetime.strptime(
-                watch.attrib['datetime'], '%Y-%m-%d %H:%M:%S')
+                watch.attrib['datetime'], DEFAULT_DATETIME_FORMAT)
             watch_count = int(watch.text)
             yield watch_datetime, watch_count
         except (AttributeError, KeyError):
@@ -296,7 +298,7 @@ def get_watches_entry(date):
 
     for watches in squirrel.findall('watches'):
         try:
-            if watches.attrib['date'] == date.strftime('%Y-%m-%d'):
+            if watches.attrib['date'] == date.strftime(DEFAULT_DATE_FORMAT):
                 return watches, squirrel
         except (KeyError, AttributeError):
             logger.warning(
@@ -345,8 +347,9 @@ def add_watch_entry(total, dt: datetime):
         watches = ET.SubElement(root,
                                 'watches',
                                 prev_count=prev_count,
-                                date=dt.date().strftime('%Y-%m-%d'))
-        make_watch_entry(watches, dt.strftime('%Y-%m-%d %H:%M:%S'), str(total))
+                                date=dt.date().strftime(DEFAULT_DATE_FORMAT))
+        make_watch_entry(watches, dt.strftime(
+            DEFAULT_DATETIME_FORMAT), str(total))
     else:
         return False
 
