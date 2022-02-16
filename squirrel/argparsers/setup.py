@@ -245,6 +245,13 @@ def _setup_data_parser(subparsers):
         help=DataParserData.help
     )
 
+    data_parser.add_argument(
+        '-f',
+        '--format',
+        type=str,
+        help='The date format of the output'
+    )
+
     group = data_parser.add_mutually_exclusive_group(required=True)
 
     group.add_argument(

@@ -242,7 +242,7 @@ def get_watches_data():
     data = []
     try:
         for watches in squirrel.findall('watches'):
-            date = watches.attrib['date']
+            date = datetime.strptime(watches.attrib['date'], '%Y-%m-%d').date()
             data.append((date,
                          int(watches.attrib['prev_count']),
                          get_watches_last_count(watches)))
@@ -272,7 +272,8 @@ def get_day_watches(watches_tag):
     Raises ProjectNotSetupCorrectlyError if project not initialized"""
     for watch in watches_tag:
         try:
-            watch_datetime = watch.attrib['datetime']
+            watch_datetime = datetime.strptime(
+                watch.attrib['datetime'], '%Y-%m-%d %H:%M:%S')
             watch_count = int(watch.text)
             yield watch_datetime, watch_count
         except (AttributeError, KeyError):
@@ -345,7 +346,7 @@ def add_watch_entry(total, dt: datetime):
                                 'watches',
                                 prev_count=prev_count,
                                 date=dt.date().strftime('%Y-%m-%d'))
-        make_watch_entry(watches, dt.strftime('%d/%m/%Y %H:%M:%S'), str(total))
+        make_watch_entry(watches, dt.strftime('%Y-%m-%d %H:%M:%S'), str(total))
     else:
         return False
 
