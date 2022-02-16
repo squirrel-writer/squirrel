@@ -1,5 +1,6 @@
 import argparse
-from datetime import datetime
+
+import dateutil.parser
 
 from .parsers import (MainParserData, SubparsersData,
                       InitParserData, WatchParserData, WatchSubparsersData,
@@ -266,7 +267,7 @@ def _setup_data_parser(subparsers):
 
 def _valid_date(s):
     try:
-        return datetime.strptime(s, '%d/%m/%Y').date()
+        return dateutil.parser.parse(s).date()
     except ValueError:
-        msg = "not a valid date: dd/mm/YYYY"
+        msg = "Not a valid date"
         raise argparse.ArgumentTypeError(msg)

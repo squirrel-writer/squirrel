@@ -8,6 +8,7 @@ rich = "*"
 daemonize = "*"
 watchdog = "*"
 pyyaml = "*"
+python-dateutil = "*"
 
 [dev-packages]
 codespell = "*"
