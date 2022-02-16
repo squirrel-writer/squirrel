@@ -83,8 +83,7 @@ def build_project_file(data: dict, file):
 
     due_date = ET.SubElement(squirrel, 'due-date')
     arg_due = data.get('due')
-    due_date.text = arg_due.strftime(
-        '%d/%m/%Y') if arg_due is not None else None
+    due_date.text = str(arg_due) if arg_due is not None else None
 
     goal = ET.SubElement(squirrel, 'goal')
     arg_goal = data.get('goal')
@@ -148,7 +147,7 @@ def update_project_file(data: dict):
 
     if (due := data.get('due')) is not None:
         try:
-            squirrel.find('due-date').text = due.strftime('%d/%m/%Y')
+            squirrel.find('due-date').text = str(due)
         except AttributeError:
             valid = False
             logger.error('due-date element was not found in the xml file'
@@ -204,6 +203,7 @@ def get_data_from_project_file(basedir=''):
         goal = None
 
     try:
+        # TODO: This should in the future return a datetime object
         due_date = squirrel.find('due-date').text
     except (AttributeError, KeyError):
         logger.error('Could not find due_date field')
@@ -295,7 +295,7 @@ def get_watches_entry(date):
 
     for watches in squirrel.findall('watches'):
         try:
-            if watches.attrib['date'] == date.strftime('%d/%m/%Y'):
+            if watches.attrib['date'] == date.strftime('%Y-%m-%d'):
                 return watches, squirrel
         except (KeyError, AttributeError):
             logger.warning(
@@ -307,7 +307,7 @@ def get_watches_entry(date):
 
 def make_watch_entry(parent, dt: str, value: str):
     """Create a <watch> tag associated with the parent"""
-    watch = ET.SubElement(parent, 'watch', datetime=str(dt))
+    watch = ET.SubElement(parent, 'watch', datetime=dt)
     watch.text = value
     return watch
 
@@ -344,8 +344,8 @@ def add_watch_entry(total, dt: datetime):
         watches = ET.SubElement(root,
                                 'watches',
                                 prev_count=prev_count,
-                                date=dt.date().strftime('%d/%m/%Y'))
-        make_watch_entry(watches, str(dt), str(total))
+                                date=dt.date().strftime('%Y-%m-%d'))
+        make_watch_entry(watches, dt.strftime('%d/%m/%Y %H:%M:%S'), str(total))
     else:
         return False
 

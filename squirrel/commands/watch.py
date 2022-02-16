@@ -111,7 +111,7 @@ def daemon(wd, logger, delay=3):
         logger.error(e)
         return False
 
-    engine = plugin_manager.plugin.module
+    engine = plugin_manager.selected_plugin.module
 
     event_handler = Handler(ignores)
     observer = Observer(timeout=70)

@@ -266,7 +266,7 @@ def _setup_data_parser(subparsers):
 
 def _valid_date(s):
     try:
-        return datetime.strptime(s, '%d/%m/%Y')
+        return datetime.strptime(s, '%d/%m/%Y').date()
     except ValueError:
         msg = "not a valid date: dd/mm/YYYY"
         raise argparse.ArgumentTypeError(msg)

@@ -51,7 +51,7 @@ def test_correct_set_command(initialized):
     assert project_data['project-type'] == 'texcount'
     assert project_data['name'] == 'test2'
     assert project_data['goal'] == '15'
-    assert project_data['due-date'] == '01/01/2022'
+    assert project_data['due-date'] == '2022-01-01'
 
 
 def test_watch_command_log_and_pid_file_creation(watching):
@@ -174,7 +174,7 @@ def test_data_today_after_watch(one_watch_added, capsys):
 
     assert return_code == 0
     assert err == ''
-    assert out == f'{one_watch_added[1]}, {one_watch_added[0]}\n'
+    assert out == f'{one_watch_added[1].strftime("%d/%m/%Y %H:%M:%S")}, {one_watch_added[0]}\n'
 
 
 def test_data_all_after_watch(one_watch_added, capsys):
@@ -183,4 +183,4 @@ def test_data_all_after_watch(one_watch_added, capsys):
 
     assert return_code == 0
     assert err == ''
-    assert out == f"{one_watch_added[1].date().strftime('%d/%m/%Y')}, {one_watch_added[0]}\n"
+    assert out == f"{one_watch_added[1].date().strftime('%Y-%m-%d')}, {one_watch_added[0]}\n"
