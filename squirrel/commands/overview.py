@@ -85,7 +85,10 @@ class Formatter:
             goal = 0
         goal_reached = True if self.total > int(goal) else False
 
-        total_and_goal = f'{self.total}/{self._goal}'
+        formatted_goal = self._goal
+        if self._goal is not None:
+            formatted_goal = format(self._goal, ',')
+        total_and_goal = f'{format(self.total, ",")}/{formatted_goal}'
         if goal_reached:
             total_and_goal = f'[green]{total_and_goal}[/]'
 
