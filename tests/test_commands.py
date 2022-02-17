@@ -106,9 +106,18 @@ def test_watch_when_plugin_unimportable(initialized, mocker, caplog):
     assert str(caplog.records[-1].msg) == f'Could not load {"text"!r}'
 
 
-def test_overview_after_init(initialized):
-    return_code = _main(['overview'])
+@pytest.mark.parametrize(
+    'args',
+    [
+        ['overview'],
+        ['overview', '--graph']
+    ]
+)
+def test_overview_after_init(args, initialized, capsys):
+    return_code = _main(args)
+    _, err = capsys.readouterr()
     assert return_code == 0
+    assert err == ''
 
 
 @pytest.mark.parametrize(
