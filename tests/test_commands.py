@@ -106,6 +106,7 @@ def test_watch_when_plugin_unimportable(initialized, mocker, caplog):
     assert str(caplog.records[-1].msg) == f'Could not load {"text"!r}'
 
 
+@pytest.mark.skip(reason='Cannot test this on github actions')
 def test_watch_status_when_watching(watching, capsys):
     return_code = _main(['watch', 'status'])
     out, err = capsys.readouterr()
