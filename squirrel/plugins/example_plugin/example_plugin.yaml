@@ -7,4 +7,5 @@ deps:
   sys:
     - command
   pip:
+    - math
     - python_package

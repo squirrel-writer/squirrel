@@ -98,21 +98,34 @@ class PluginManager:
 
     def verify_pip_deps(self) -> bool:
         for dep in self.selected_plugin.pip_deps:
-            if importlib.util.find_spec(dep) is None:
+            if not self.verify_pip_dep(dep):
                 self.logger.error(
                     f'• {dep!r} was not found in your pip packages')
                 return False
         return True
 
+    @staticmethod
+    def verify_pip_dep(dep) -> bool:
+        if importlib.util.find_spec(dep) is None:
+            return False
+        return True
+
     def verify_sys_deps(self) -> bool:
         for dep in self.selected_plugin.sys_deps:
-            try:
-                subprocess.run(f'command -v {dep}',
-                               shell=True, check=True, capture_output=True)
-            except subprocess.CalledProcessError:
+            present = self.verify_sys_dep(dep)
+            if not present:
                 self.logger.error(f'• {dep!r} was not found on your system')
                 return False
         return True
+
+    @staticmethod
+    def verify_sys_dep(dep) -> bool:
+        try:
+            subprocess.run(f'command -v {dep}',
+                           shell=True, check=True, capture_output=True)
+            return True
+        except subprocess.CalledProcessError:
+            return False
 
     def load(self):
         """Loads the module declared in the xml project file.

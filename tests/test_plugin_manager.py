@@ -213,3 +213,27 @@ def test_parse_yaml_config():
                                                """, 'test_plugin')
     assert e.type == PluginNotSetupCorrectlyError
     assert f'Could not parse {"test_plugin"!r}\'s yaml config' in str(e.value)
+
+
+@pytest.mark.parametrize(
+    'dep, expected',
+    [
+        ('cd', True),
+        ('yes', True),
+        ('not_really_a_command', False)
+    ]
+)
+def test_verify_sys_dep(dep, expected):
+    assert plugin.PluginManager.verify_sys_dep(dep) == expected
+
+
+@pytest.mark.parametrize(
+    'dep, expected',
+    [
+        ('math', True),
+        ('subprocess', True),
+        ('panda', False),
+    ]
+)
+def test_verify_sys_dep(dep, expected):
+    assert plugin.PluginManager.verify_pip_dep(dep) == expected
