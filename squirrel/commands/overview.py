@@ -1,4 +1,4 @@
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 from rich.panel import Panel
 from rich.columns import Columns
@@ -76,7 +76,7 @@ class Formatter:
 
     @property
     def today(self):
-        return f'[hot_pink3]Today:[/] {self._today}[italic] words[/]'
+        return f'[hot_pink3]Today:[/] {format(self._today, ",")}[italic] words[/]'
 
     @property
     def goal(self):
@@ -101,10 +101,10 @@ class Formatter:
             dd = self._due_date
             dd_formated = self._due_date.strftime(self.format)
             if date.today() <= dd:
-                delta = dd - datetime.now()
+                delta = dd - date.today()
                 due_date_formatted = f'{dd_formated} [italic blue]({delta.days} days left)[/]'
             else:
-                due_date_formatted = f'[blinking red]{dd_formated}[/]'
+                due_date_formatted = f'[blink red]{dd_formated}[/]'
 
         return f'[hot_pink3]Due Date:[/] {due_date_formatted}'
 
