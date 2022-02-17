@@ -161,7 +161,7 @@ def _barchart(watches, date_format):
             line += '\n'
             output += line
             line = ''
-        output += '[green]--[/] ' * len(stats)
+        output += '[green]——[/] ' * len(stats)
         return output
 
     logger.debug(f'_barchart: {watches}')
