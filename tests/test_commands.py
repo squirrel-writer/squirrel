@@ -106,6 +106,24 @@ def test_watch_when_plugin_unimportable(initialized, mocker, caplog):
     assert str(caplog.records[-1].msg) == f'Could not load {"text"!r}'
 
 
+def test_watch_status_when_watching(watching, capsys):
+    return_code = _main(['watch', 'status'])
+    out, err = capsys.readouterr()
+
+    assert return_code == 0
+    assert err == ''
+    assert out == '● squirreld watcher is running\n'
+
+
+def test_watch_status_when_not_watching(capsys):
+    return_code = _main(['watch', 'status'])
+    out, err = capsys.readouterr()
+
+    assert return_code != 0
+    assert err == ''
+    assert out == '● squirreld watcher is not running\n'
+
+
 @pytest.mark.parametrize(
     'args',
     [

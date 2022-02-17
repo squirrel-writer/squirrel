@@ -14,4 +14,4 @@ def _main(args=None):
                         datefmt="[%X]",
                         handlers=[RichHandler()])
 
-    return not args.func(args)
+    return int(not args.func(args))
