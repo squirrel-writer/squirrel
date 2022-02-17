@@ -238,6 +238,7 @@ def _setup_overview_parser(subparsers):
     )
 
     overview_parser.add_argument(
+        '-g',
         '--graph',
         action='store_true',
         help='Display a bar chart for the last 5 days of writing'

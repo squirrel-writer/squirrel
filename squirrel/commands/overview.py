@@ -131,8 +131,11 @@ def _barchart(watches, date_format):
             d[watch[0]] = watch[2] - watch[1]
         return d
 
-    def format(stats):
-        return '\n'.join([f'• {dates[i].strftime(date_format)} : {stat} [italic]words[/]' for i, stat in enumerate(stats)])
+    def format_stats(stats):
+        return '\n' + '\n'.join([
+            f'• {dates[i].strftime(date_format)} : {format(stat, ",")} [italic]words[/]'
+            for i, stat in enumerate(stats)
+        ])
 
     def normalize(stats):
         _max = max(stats)
@@ -173,4 +176,4 @@ def _barchart(watches, date_format):
     output = plot(stats_normalized)
 
     console.print(
-        Columns([Panel(output), format(stats)], expand=False, padding=5))
+        Columns([Panel(output), format_stats(stats)], expand=False, padding=5))
