@@ -38,8 +38,8 @@ def _overview(project_data, watches, date_format):
     total = 0
     today = 0
     if len(watches):
-        _, prev, total = watches[-1]
-        today = total - prev
+        date_count, prev, total = watches[-1]
+        today = total - prev if date_count == date.today() else 0
 
     formatter = Formatter(
         project_data.get('name', None),
