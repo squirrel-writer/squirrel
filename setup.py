@@ -90,7 +90,7 @@ setup(
         ]
     },
     name="squirrel-writer",
-    version="0.0.3",
+    version="0.0.4",
     author="Mohieddine Drissi",
     author_email="m.drissi@protonmail.com",
     url="https://github.com/squirrel-writer/squirrel",

@@ -34,7 +34,7 @@ def _setup_main_parser():
         '-v',
         '--version',
         action='version',
-        version='%(prog)s 0.0.3',
+        version='%(prog)s 0.0.4',
         help='Show the version of the program',
     )
 
