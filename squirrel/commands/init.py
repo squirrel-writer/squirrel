@@ -1,9 +1,9 @@
 import os
-import shutil
 
 from ..xml import build_project
 from ..vars import logger, console
 from ..vars import DIRECTORY_NAME
+from ..delete_module import delete_project
 
 
 def init(args):
@@ -31,28 +31,8 @@ def init(args):
     return False
 
 
-def _delete_project_folder(path, warning_msg=None, yes=False):
-    if warning_msg is None:
-        warning_msg = 'This command will delete your 🐿️  project folder\n'\
-            'proceed? (y/n)'
-
-    if not yes:
-        try:
-            while (a := console.input(warning_msg)) not in ('y', 'n'):
-                pass
-        except KeyboardInterrupt:
-            a = 'n'
-    else:
-        a = 'y'
-
-    if a == 'y':
-        shutil.rmtree(path)
-        return True
-    return False
-
-
 def _reset_project_folder(path, yes=False):
     warning_str = 'A 🐿️  is already present.\n[red bold]'\
         'This action will reset all your data\nproceed? (y/n)'
 
-    return _delete_project_folder(path, warning_msg=warning_str, yes=yes)
+    return delete_project(path, warning_msg=warning_str, yes=yes, delete_ignore=False)

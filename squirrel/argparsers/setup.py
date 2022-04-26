@@ -5,8 +5,8 @@ import dateutil.parser
 from .parsers import (MainParserData, SubparsersData,
                       InitParserData, WatchParserData, WatchSubparsersData,
                       StartWatchParserData, StatusWatchParserData, StopWatchParserData,
-                      SetParserData, OverviewParserData, DataParserData)
-from ..commands import init_cmd, set_cmd, overview_cmd, watch_cmd, data_cmd
+                      SetParserData, OverviewParserData, DataParserData, DeleteParserData)
+from ..commands import init_cmd, set_cmd, overview_cmd, watch_cmd, data_cmd, delete_cmd
 from ..commands.watch import status, stop
 from ..vars import DEFAULT_DATE_FORMAT
 
@@ -20,6 +20,7 @@ def setup_parsers():
     _setup_overview_parser(subparsers)
     _setup_watch_parser(subparsers)
     _setup_data_parser(subparsers)
+    _setup_delete_parser(subparsers)
 
     return main_parser
 
@@ -280,6 +281,17 @@ def _setup_data_parser(subparsers):
 
     data_parser.set_defaults(func=data_cmd)
     return data_parser
+
+
+def _setup_delete_parser(subparsers):
+    delete_parser = subparsers.add_parser(
+        DeleteParserData.name,
+        description=DeleteParserData.desc,
+        help=DeleteParserData.help
+    )
+
+    delete_parser.set_defaults(func=delete_cmd)
+    return delete_parser
 
 
 def _valid_date(s):
