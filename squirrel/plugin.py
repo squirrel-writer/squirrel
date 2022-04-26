@@ -155,7 +155,7 @@ class PluginManager:
 
     @staticmethod
     def get_files(wd, ignores):
-        """Function to find all non-ignored files i project directory"""
+        """Function to find all non-ignored files in project directory"""
         ignore = ignores.get('ignore')
         project_files = set()
         for file in iglob('**/*', recursive=True):

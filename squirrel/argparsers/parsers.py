@@ -11,7 +11,7 @@ class SubparsersData:
 
 class InitParserData:
     name = 'init'
-    desc = 'Inialiazation of new projects'
+    desc = 'Initialization of new projects'
     help = f'Create a new {MainParserData.prog} project or reset the existing one'
 
 
@@ -30,7 +30,7 @@ class WatchSubparsersData:
 class StartWatchParserData:
     name = 'start'
     desc = 'Monitoring and tracking writing'
-    help = 'Start to monitor the current directory.\n' \
+    help = 'Start monitoring the current directory\n' \
         f' Note: a {MainParserData.prog} project must have already been created with `init`'
 
 
@@ -43,20 +43,20 @@ class StatusWatchParserData:
 class StopWatchParserData:
     name = 'stop'
     desc = 'Stop monitoring and tracking writing'
-    help = 'stop monitoring the current directory.\n'\
+    help = 'Stop monitoring the current directory\n'\
         'Note: This only works with the daemonized version'
 
 
 class SetParserData:
     name = 'set'
-    desc = 'set or change information about the project e.g description, name, goal'
-    help = 'set or change information about the project'
+    desc = 'Set or change information about the project e.g description, name, goal'
+    help = 'Set or change information about the project'
 
 
 class OverviewParserData:
     name = 'overview'
-    desc = 'shows your writing progress'
-    help = 'shows an overview of your writing progress'
+    desc = 'Shows your writing progress'
+    help = 'Shows an overview of your writing progress'
 
 
 class DataParserData:
