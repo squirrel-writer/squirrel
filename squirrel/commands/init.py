@@ -33,7 +33,7 @@ def init(args):
 
 def _delete_project_folder(path, warning_msg=None, yes=False):
     if warning_msg is None:
-        warning_msg = 'This command will delete your 🐿️  project foldre\n'\
+        warning_msg = 'This command will delete your 🐿️  project folder\n'\
             'proceed? (y/n)'
 
     if not yes:
@@ -53,6 +53,6 @@ def _delete_project_folder(path, warning_msg=None, yes=False):
 
 def _reset_project_folder(path, yes=False):
     warning_str = 'A 🐿️  is already present.\n[red bold]'\
-        'This action will reset all your data proceed? (y/n)'
+        'This action will reset all your data\nproceed? (y/n)'
 
     return _delete_project_folder(path, warning_msg=warning_str, yes=yes)
