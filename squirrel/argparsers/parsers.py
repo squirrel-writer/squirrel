@@ -63,3 +63,9 @@ class DataParserData:
     name = 'data'
     desc = 'Returns raw data from a squirrel project'
     help = 'Returns squirrel project data in a raw format'
+
+
+class DeleteParserData:
+    name = 'delete'
+    desc = 'Deletes a squirrel project'
+    help = 'Permanently deletes the squirrel project in the directory you are in'
