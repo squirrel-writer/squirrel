@@ -8,7 +8,7 @@
 squirrel is a command line program that tracks you writing progress.
 The program can tell you:
 * How many days are left before due-date.
-* How many words you've wrote each day.
+* How many words you've written each day.
 * ...
 
 ## How it works
